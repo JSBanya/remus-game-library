@@ -12,6 +12,8 @@ find_package(glm REQUIRED)
 find_package(Freetype REQUIRED)
 find_package(glfw3 REQUIRED)
 
+find_library(assimp REQUIRED)
+
 add_library(remus STATIC
 	src/engine/runtime.cpp
 	src/engine/window.cpp
@@ -23,11 +25,9 @@ add_library(remus STATIC
 	src/engine/scene/scene.cpp
 	src/engine/scene/component.cpp
 
-	src/engine/entity/entity.cpp
-	src/engine/entity/text.cpp
-
 	src/utils/mouse.cpp
-	src/utils/definitions.cpp
+
+	src/gfx/entity/entity.cpp
 
     src/gfx/view/camera.cpp
 	src/gfx/view/orthographicCamera.cpp
@@ -41,6 +41,7 @@ add_library(remus STATIC
 
 	src/gfx/models/model.cpp
 	src/gfx/models/mesh.cpp
+	src/gfx/models/rectangle.cpp
 
 	src/gfx/shaders/shader.cpp
 	src/gfx/shaders/shaderProgram.cpp

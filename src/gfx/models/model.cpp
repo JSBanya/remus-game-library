@@ -3,12 +3,56 @@
 namespace remus {
 	namespace gfx {
 		namespace models {
+			Model::Model(std::unordered_map<std::string, Mesh*> meshes) {
+				this->meshes = meshes;
+			}
 
-			Model::Model(Mesh* m, std::vector<texture::Texture2D*> t) {
-				this->mesh = m;
-				for(auto tex : t) 
-					this->addTexture(tex);
-				this->modelMatrixReset();
+			Model::Model(std::vector<Mesh*> meshes, std::vector<std::string> names) {
+				if(meshes.size() != names.size()) {
+					throw std::logic_error("Meshes provided to model with unequal number of names.");
+				}
+
+				for(auto i = 0; i < meshes.size(); i++) {
+					this->addMesh(meshes[i], names[i]);
+				}
+			}
+
+			void Model::addMesh(Mesh* m, std::string name) {
+				if(this->meshes.count(name) != 0) {
+					logger::logWarning("Duplicate mesh added to model.");
+				}
+
+				this->meshes[name] = m;
+			}
+
+			Mesh* Model::getMesh(std::string name) {
+				if(this->meshes.count(name) == 0) {
+					logger::logWarning("Attempted to get non-existent mesh from model.");
+					return nullptr;
+				}
+
+				return this->meshes[name];
+			}
+
+			void Model::draw(shaders::ShaderProgram* shader, std::unordered_map<std::string, texture::TextureSet*> textures) {
+				for(auto &it : this->meshes) {
+					if(textures.count(it.first) == 0) {
+						continue;
+					} else {
+						textures[it.first]->bind(shader);
+					}
+
+					it.second->draw();
+				}
+			}
+
+			bool Model::hasOBB() noexcept {
+				for(auto &it : this->meshes) {
+					if(it.second->hasOBB()) {
+						return true;
+					}
+				}
+				return false;
 			}
 
 			Model::~Model() {

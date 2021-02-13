@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glad/glad.h>
+#include <cstddef>
 
 namespace remus {
 	namespace gfx {
@@ -12,16 +13,16 @@ namespace remus {
 
 				inline void bind() noexcept {
 					glBindVertexArray(this->ID);
-				}
+				};
 
-				inline void addAttribute(GLint i, GLint size, GLint stride, GLint offset) noexcept {
-					glVertexAttribPointer(i, size, GL_FLOAT, GL_FALSE, stride * sizeof(GLfloat), (GLvoid*) (offset * sizeof(GLfloat)) );
+				inline void addAttribute(GLint i, GLint size, GLint stride, size_t offset) noexcept {
+					glVertexAttribPointer(i, size, GL_FLOAT, GL_FALSE, stride, (void*)offset);
 					glEnableVertexAttribArray(i);
-				}
+				};
 
-				inline void addAttributePacked(GLint i, GLint size) noexcept {
-					this->addAttribute(i, size, size, 0);
-				}
+				inline void addAttributeAsFloat(GLint i, GLint size, GLint stride, GLuint offset) noexcept {
+					this->addAttribute(i, size, stride * sizeof(GLfloat), offset * sizeof(GLfloat));
+				};
 
 				inline void unbind() noexcept { 
 					glBindVertexArray(0); 

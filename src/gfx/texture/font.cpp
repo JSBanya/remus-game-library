@@ -10,8 +10,14 @@ namespace remus {
 					throw std::runtime_error("Font not found at path: " + fontPath);
 				}
 
+				FT_Library ft;
+				if(FT_Init_FreeType(&ft)) {
+					throw std::runtime_error("Unable to init FreeType Library.");
+				}
+
 				FT_Face face;
-				if(FT_New_Face(Font::ft, p.c_str(), 0, &face)) {
+				if(FT_New_Face(ft, p.c_str(), 0, &face)) {
+					FT_Done_FreeType(ft);
 					throw std::runtime_error("Failed to load font: " + fontPath);
 				}
 
@@ -24,6 +30,7 @@ namespace remus {
 				for (unsigned char c = 0; c < 128; c++) {
 					if(FT_Load_Char(face, c, FT_LOAD_RENDER)) {
 						FT_Done_Face(face);
+						FT_Done_FreeType(ft);
 						throw std::runtime_error("Unable to load glyph " + std::to_string(c) + " from font " + fontPath);
 					}
 
@@ -48,6 +55,82 @@ namespace remus {
 
 				glPixelStorei(GL_UNPACK_ALIGNMENT, unpackAlignment);
 				FT_Done_Face(face);
+				FT_Done_FreeType(ft);
+
+				// Initialize objects for text generation
+				characterModel = new models::Rectangle(2.0f, 2.0f);
+				characterTextureSet = new TextureSet();
+				characterEntity = new entity::Entity(characterModel, (shaders::ShaderProgram*)nullptr, { characterTextureSet }, { "rectangle" });
+			}
+
+			Texture2D* Font::getText(std::string text, shaders::ShaderProgram* generationShader) {
+				characterEntity->setShader(generationShader);
+
+				// Find width and height of final texture
+				GLfloat width = 0.0f;
+				GLfloat height = 0.0f;
+				GLfloat origin = 0.0f;
+
+				for(const char c : text) {
+					auto ch = this->getCharacter(c);
+					if(ch == nullptr) {
+						logger::logWarning("Error in generating text: Character '" + std::string(1, c) + "' not found.");
+						continue;
+					}
+					width += (ch->advance >> 6);
+					
+					auto ypos = ch->size.y - ch->bearing.y;
+					if(ypos > origin)
+						origin = ypos;
+
+					auto h = ch->size.y + ypos;
+					if(h > height)
+						height = h;
+				}
+
+				// Fill texture
+				auto textTexture = new gfx::texture::WritableTexture2D(width, height);
+				textTexture->startWrite();
+				
+				GLfloat x = 0.0;
+				for(const char c : text) {
+					auto ch = this->getCharacter(c);
+					if(ch == nullptr) {
+						logger::logWarning("Error in generating text: Character '" + std::string(1, c) + "' not found.");
+						continue;
+					}
+					
+					GLfloat xpos = x + ch->bearing.x;
+					xpos /= width;
+					xpos = -1.0f + 2.0f * xpos;
+
+					GLfloat ypos = origin - (ch->size.y - ch->bearing.y);
+					ypos /= height;
+					ypos = -1.0f + 2.0f * ypos;
+
+					GLfloat sizeX = 2.0 * (ch->size.x / width);
+					GLfloat sizeY = 2.0 * (ch->size.y / height);
+					
+
+					auto mm = this->characterEntity->getModelMatrix();
+					mm.reset(models::LOCAL);
+					mm.translate(xpos, ypos, 0.0f);
+					mm.scale(sizeX, sizeY, 1.0f);
+
+					this->characterTextureSet->addTexture(ch->texture, "character");
+					
+					generationShader->bind();
+					this->characterEntity->draw();
+					x += (ch->advance >> 6);
+				}
+
+				textTexture->stopWrite();
+
+				generationShader->unbind();
+				characterEntity->setShader(nullptr);
+				this->characterTextureSet->removeTexture("character");
+
+				return textTexture;
 			}
 
 			Font::~Font() {
@@ -55,6 +138,10 @@ namespace remus {
 					delete c.second->texture;
 					delete c.second;
 				}
+
+				delete this->characterEntity;
+				delete this->characterModel;
+				delete this->characterTextureSet;
 			}
 
 		}

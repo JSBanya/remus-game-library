@@ -15,8 +15,12 @@ namespace remus {
 					glBindBuffer(GL_ARRAY_BUFFER, this->ID);
 				}
 
+				inline void addDataStatic(void* data, size_t size) noexcept {
+					glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW); 
+				}
+
 				inline void addDataStatic(std::vector<GLfloat> v) noexcept { 
-					glBufferData(GL_ARRAY_BUFFER, v.size()*sizeof(GLfloat), &v[0], GL_STATIC_DRAW); 
+					this->addDataStatic(&v[0], v.size()*sizeof(GLfloat));
 				};
 
 				inline void unbind() noexcept { 

@@ -13,17 +13,14 @@ namespace remus {
 				(void) num;
 			}
 
-			void SceneComponent::render(GLfloat time, GLfloat delta, glm::mat4 projectionMatrix, glm::mat4 viewMatrix) {
+			void SceneComponent::render(gfx::view::Camera* camera, GLfloat time, GLfloat delta) {
 				auto entities = this->getEntities();
 				for(auto e : entities) {
-					e->setUniform("projectionMatrix", projectionMatrix);
-					e->setUniform("viewMatrix", viewMatrix);
-					e->setUniform("modelMatrix", e->getModel()->getModelMatrix());
-					e->draw();
+					e->draw(camera);
 				}
 			}
 
-			std::vector<entity::Entity*> SceneComponent::getEntities() noexcept {
+			std::vector<gfx::entity::Entity*> SceneComponent::getEntities() noexcept {
 				return this->entities;
 			}
 

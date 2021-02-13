@@ -30,10 +30,6 @@ namespace remus {
 				virtual void tick(GLint num); // Happens every game tick
 				virtual void render(GLfloat time, GLfloat delta); // Happens every frame (depends on fps)
 
-				GLfloat rayCastAt(entity::Entity* entity, GLfloat x, GLfloat y) noexcept;
-				GLfloat rayCastAtMouse(entity::Entity* entity) noexcept;
-				entity::Entity* getRayCastMouseNearest() noexcept;
-
 				inline void addComponent(SceneComponent* c) noexcept {
 					this->components.push_back(c);
 				}

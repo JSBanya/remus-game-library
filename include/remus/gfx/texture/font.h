@@ -11,6 +11,13 @@
 #include <filesystem>
 #include <unordered_map>
 #include <remus/gfx/texture/texture2d.h>
+#include <remus/gfx/models/model.h>
+#include <remus/gfx/models/rectangle.h>
+#include <remus/gfx/shaders/shaderProgram.h>
+#include <remus/gfx/texture/writableTexture2d.h>
+#include <remus/gfx/texture/textureSet.h>
+#include <remus/gfx/entity/entity.h>
+#include <remus/logging/logger.h>
 
 namespace remus {
 	namespace gfx {
@@ -25,14 +32,6 @@ namespace remus {
 
 			class Font {
 			public:
-				static inline void initLibrary() {
-					if(FT_Init_FreeType(&Font::ft)) throw std::runtime_error("Unable to init FreeType Library.");
-				}
-
-				static inline void destroyLibrary() {
-					FT_Done_FreeType(Font::ft);
-				}
-
 				Font(std::string fontPath, GLint size);
 
 				inline Character* getCharacter(char c) {
@@ -40,11 +39,16 @@ namespace remus {
 					return this->characters[c];
 				}
 
+				Texture2D* getText(std::string text, gfx::shaders::ShaderProgram* generationShader);
+
 				virtual ~Font();
 
 			private:
-				static inline FT_Library ft;
 				std::unordered_map<char, Character*> characters;
+
+				models::Model* characterModel;
+				entity::Entity* characterEntity;
+				TextureSet* characterTextureSet;
 			};
 
 		}
