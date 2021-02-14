@@ -23,6 +23,8 @@ namespace remus {
 				virtual void render(gfx::view::Camera* camera, GLfloat time, GLfloat deltax);
 				virtual std::vector<gfx::entity::Entity*> getEntities() noexcept;
 
+				void addEntity(gfx::entity::Entity* e) noexcept;
+
 				inline std::string getName() {
 					return this->name;
 				}

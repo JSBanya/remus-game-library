@@ -2,64 +2,64 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <unordered_map>
 
 namespace remus {
 	namespace utils {
 
-		void __mouse_callback(GLFWwindow* window, double xpos, double ypos);
-
 		class Mouse {
 		public:
-			static void attach(GLFWwindow* window) noexcept {
-				glfwSetCursorPosCallback(window, __mouse_callback);
+			Mouse(GLFWwindow* window);
+
+			void setViewport(GLfloat minX, GLfloat maxX, GLfloat minY, GLfloat maxY) noexcept {
+				this->minX = minX;
+				this->maxX = maxX;
+				this->minY = minY;
+				this->maxY = maxY;
 			}
 
-			static void detach(GLFWwindow* window) noexcept {
-				glfwSetCursorPosCallback(window, NULL);
+			inline void setX(GLfloat x) noexcept {
+				this->x = x;
+				if(this->x < minX) this->x = this->minX;
+				if(this->x > maxX) this->x = this->maxX;
 			}
 
-			static void setViewport(GLfloat minX, GLfloat maxX, GLfloat minY, GLfloat maxY) noexcept {
-				Mouse::minX = minX;
-				Mouse::maxX = maxX;
-				Mouse::minY = minY;
-				Mouse::maxY = maxY;
+			inline void setY(GLfloat y) noexcept {
+				this->y = y;
+				if(this->y < minY) this->y = this->minY;
+				if(this->y > maxY) this->y = this->maxY;
 			}
 
-			static void setX(GLfloat x) noexcept {
-				Mouse::x = x;
-				if(Mouse::x < minX) Mouse::x = Mouse::minX;
-				if(Mouse::x > maxX) Mouse::x = Mouse::maxX;
+			inline void setXY(GLfloat x, GLfloat y) noexcept {
+				this->setX(x);
+				this->setY(y);
 			}
 
-			static void setY(GLfloat y) noexcept {
-				Mouse::y = y;
-				if(Mouse::y < minY) Mouse::y = Mouse::minY;
-				if(Mouse::y > maxY) Mouse::y = Mouse::maxY;
-			}
-
-			static void setXY(GLfloat x, GLfloat y) noexcept {
-				Mouse::setX(x);
-				Mouse::setY(y);
-			}
-
-			static GLfloat getX(bool normalized) noexcept {
+			inline GLfloat getX(bool normalized) noexcept {
 				if(!normalized)
-					return Mouse::x;
-				return 2 * ((Mouse::x - Mouse::minX) / (Mouse::maxX - Mouse::minX)) - 1.0f;
+					return this->x;
+				return 2 * ((this->x - this->minX) / (this->maxX - this->minX)) - 1.0f;
 			}
 
-			static GLfloat getY(bool normalized, bool inversed) noexcept {
-				auto y = Mouse::y;
+			inline GLfloat getY(bool normalized, bool inversed) noexcept {
+				auto y = this->y;
 				if(inversed) 
-					y = Mouse::maxY - y;
+					y = this->maxY - y;
 				if(!normalized) 
 					return y;
-				return 2 * ((y - Mouse::minY) / (Mouse::maxY - Mouse::minY)) - 1.0f;
+				return 2 * ((y - this->minY) / (this->maxY - this->minY)) - 1.0f;
 			}
+
+			~Mouse();
 			
 		private:
-			static inline GLfloat minX, maxX, minY, maxY;
-			static inline GLfloat x, y;
+			GLFWwindow* window;
+			GLfloat minX, maxX, minY, maxY;
+			GLfloat x, y;
+			
+		private:
+			static void posCallback(GLFWwindow* window, double xpos, double ypos);
+			static inline std::unordered_map<GLFWwindow*, Mouse*> instances;
 		};
 
 	}

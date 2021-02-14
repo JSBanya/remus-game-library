@@ -29,6 +29,10 @@ namespace remus {
 			if(share != NULL) {
 				this->glPointersLoaded = share->isGlPointersLoaded();
 			}
+
+			// Create utils
+			this->mouse = new utils::Mouse(this->window);
+			this->mouse->setViewport(0, this->width, 0, this->height);
 		}
 
 		void Window::clear() noexcept {
@@ -37,16 +41,6 @@ namespace remus {
 
 		void Window::update() noexcept {
 			glfwSwapBuffers(this->window);
-		}
-
-		Window* Window::attachMouse() noexcept {
-			utils::Mouse::attach(this->window);
-			return this;
-		}
-
-		Window* Window::detachMouse() noexcept {
-			utils::Mouse::detach(this->window);
-			return this;
 		}
 
 		Window* Window::setMouseInputNormal() noexcept {
@@ -161,6 +155,7 @@ namespace remus {
 		}	
 
 		Window::~Window() {
+			delete this->mouse;
 			glfwDestroyWindow(this->window);
 		}
 	}

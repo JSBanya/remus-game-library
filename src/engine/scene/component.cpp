@@ -20,6 +20,10 @@ namespace remus {
 				}
 			}
 
+			void SceneComponent::addEntity(gfx::entity::Entity* e) noexcept {
+				this->entities.push_back(e);
+			}
+
 			std::vector<gfx::entity::Entity*> SceneComponent::getEntities() noexcept {
 				return this->entities;
 			}

@@ -18,8 +18,7 @@ namespace remus {
 			void clear() noexcept;
 			void update() noexcept;
 
-			Window* attachMouse() noexcept;
-			Window* detachMouse() noexcept;
+			
 			Window* setMouseInputNormal() noexcept; // Makes the cursor visible and behaving normally
 			Window* setMouseInputHidden() noexcept; // Makes the cursor invisible when it is over the content area of the window but does not restrict the cursor from leaving
 			Window* setMouseInputBound() noexcept; // Hides and grabs the cursor, providing virtual and unlimited cursor movement
@@ -38,6 +37,7 @@ namespace remus {
 			Window* setClearColor(glm::vec4 rgba) noexcept;
 			Window* setClearColor(GLfloat r, GLfloat g, GLfloat b, GLfloat a) noexcept;
 
+			inline utils::Mouse* getMouse() noexcept { return this->mouse; };
 			inline GLFWwindow* getWindow() noexcept { return this->window; };
 			inline GLFWmonitor* getMonitor() noexcept { return this->monitor; };
 			inline GLint getWidth() noexcept { return this->width; };
@@ -49,6 +49,7 @@ namespace remus {
 
 		protected:
 			GLFWwindow* window;
+			utils::Mouse* mouse;
 
 			bool isCurrent = false;
 			GLFWmonitor* monitor;

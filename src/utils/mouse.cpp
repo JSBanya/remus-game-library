@@ -3,9 +3,19 @@
 namespace remus {
 	namespace utils {
 
-		void __mouse_callback(GLFWwindow* window, double xpos, double ypos) {
-			Mouse::setXY(xpos, ypos);
-			// glfwSetCursorPos(window, Mouse::getX(false), Mouse::getY(false, false));
+		Mouse::Mouse(GLFWwindow* window) : window(window) {
+			Mouse::instances[window] = this;
+			glfwSetCursorPosCallback(window, Mouse::posCallback);
+		}
+
+		void Mouse::posCallback(GLFWwindow* window, double xpos, double ypos) {
+			auto instance = Mouse::instances[window];
+			instance->setXY(xpos, ypos);
+		}
+
+		Mouse::~Mouse() {
+			glfwSetCursorPosCallback(this->window, NULL);
+			Mouse::instances.erase(this->window);
 		}
 
 	}
