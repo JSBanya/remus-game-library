@@ -23,20 +23,16 @@ namespace remus {
 			Window* setMouseInputHidden() noexcept; // Makes the cursor invisible when it is over the content area of the window but does not restrict the cursor from leaving
 			Window* setMouseInputBound() noexcept; // Hides and grabs the cursor, providing virtual and unlimited cursor movement
 
-			Window* makeCurrent();
+			Window* attach();
 			Window* detach() noexcept;
 
-			Window* refreshGLContext();
+			Window* setViewport(GLint width, GLint height);
+			Window* setGlDepthTest(bool value);
+			Window* setGlBlend(bool value);
+			Window* setMSAA(GLint value);
+			Window* setClearColor(GLfloat r, GLfloat g, GLfloat b, GLfloat a);
 
-			Window* loadGlPointers();
-			inline bool isGlPointersLoaded() noexcept { return this->glPointersLoaded; };
-			
-			Window* setGlDepthTest(bool value) noexcept;
-			Window* setGlBlend(bool value) noexcept;
-			Window* setMSAA(GLint value) noexcept;
-			Window* setClearColor(glm::vec4 rgba) noexcept;
-			Window* setClearColor(GLfloat r, GLfloat g, GLfloat b, GLfloat a) noexcept;
-
+			inline bool isPointersLoaded() noexcept { return this->pointersLoaded; };
 			inline utils::Mouse* getMouse() noexcept { return this->mouse; };
 			inline GLFWwindow* getWindow() noexcept { return this->window; };
 			inline GLFWmonitor* getMonitor() noexcept { return this->monitor; };
@@ -48,9 +44,15 @@ namespace remus {
 			virtual ~Window();
 
 		protected:
+			void assertAttached();
+			void loadGlPointers();
+
+		protected:
 			GLFWwindow* window;
 			utils::Mouse* mouse;
 
+			bool pointersLoaded;
+			bool viewportSet = false;
 			bool isCurrent = false;
 			GLFWmonitor* monitor;
 			GLint width, height;
@@ -58,12 +60,15 @@ namespace remus {
 			bool fullscreen;
 
 			// OpenGL
-			bool glPointersLoaded = false;
-			bool depthTest = false;
-			bool blend = false;
-			GLint msaa = 0;
 			glm::vec4 clearColor = glm::vec4(0, 0, 0, 1.0);
 			GLint clearMode = GL_COLOR_BUFFER_BIT;
+
+		protected:
+			inline static GLint openGLMajor = 3, openGLMinor = 3;
+			inline static GLint openWindows = 0;
+
+			static void initEnvironment();
+			static void destroyEnvironment();
 		};
 
 	}

@@ -11,17 +11,16 @@ find_package(OpenGL REQUIRED)
 find_package(glm REQUIRED)
 find_package(Freetype REQUIRED)
 find_package(glfw3 REQUIRED)
-
-find_library(assimp REQUIRED)
+find_package(assimp REQUIRED)
 
 add_library(remus STATIC
 	src/engine/runtime.cpp
 	src/engine/window.cpp
 	src/engine/context.cpp
+	src/engine/context_defaults.cpp
 
-	src/engine/driver/driver.cpp
-	src/engine/driver/stackDriver.cpp
-
+	src/engine/scene/driver.cpp
+	src/engine/scene/stackDriver.cpp
 	src/engine/scene/scene.cpp
 	src/engine/scene/component.cpp
 
@@ -41,12 +40,14 @@ add_library(remus STATIC
 
 	src/gfx/models/model.cpp
 	src/gfx/models/mesh.cpp
+	src/gfx/models/modelMatrix.cpp
 	src/gfx/models/rectangle.cpp
 
 	src/gfx/shaders/shader.cpp
 	src/gfx/shaders/shaderProgram.cpp
 
 	src/gfx/texture/texture2d.cpp
+	src/gfx/texture/textureSet.cpp
 	src/gfx/texture/writableTexture2d.cpp
 	src/gfx/texture/font.cpp
 
@@ -63,7 +64,7 @@ target_include_directories(remus PUBLIC
 
 target_include_directories(remus PRIVATE src)
 
-target_link_libraries(remus stdc++fs GL glfw "${CMAKE_DL_LIBS}" freetype)
+target_link_libraries(remus stdc++fs GL glfw "${CMAKE_DL_LIBS}" freetype "${ASSIMP_LIBRARIES}")
 
 install(TARGETS remus
 	EXPORT remusConfig
@@ -80,3 +81,17 @@ export(TARGETS remus
 install(EXPORT remusConfig
     DESTINATION "${CMAKE_INSTALL_DATADIR}/remus/cmake"
 )
+
+# Create test environment
+add_executable(remus_test 
+	test/main.cpp
+	test/testScene.cpp
+	test/testComponent.cpp
+	test/testDriver.cpp
+)
+
+target_include_directories(remus_test PRIVATE test)
+
+target_link_libraries(remus_test remus)
+
+file(COPY test/resources DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

@@ -36,13 +36,16 @@ namespace remus {
 
 			void Model::draw(shaders::ShaderProgram* shader, std::unordered_map<std::string, texture::TextureSet*> textures) {
 				for(auto &it : this->meshes) {
-					if(textures.count(it.first) == 0) {
-						continue;
-					} else {
+					bool hasTextureSet = (textures.count(it.first) != 0);
+					if(hasTextureSet) {
 						textures[it.first]->bind(shader);
 					}
 
 					it.second->draw();
+
+					if(hasTextureSet) {
+						textures[it.first]->unbind();
+					}
 				}
 			}
 

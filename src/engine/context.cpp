@@ -53,12 +53,12 @@ namespace remus {
 			return this;
 		}
 
-		Context* Context::loadShaderVertex(std::string path, std::string name) {
-			return this->loadShader(path, name, "vertex");
+		Context* Context::loadShaderVertex(std::string name, std::string path) {
+			return this->loadShader(name, path, "vertex");
 		}
 
-		Context* Context::loadShaderFragment(std::string path, std::string name) {
-			return this->loadShader(path, name, "fragment");
+		Context* Context::loadShaderFragment(std::string name, std::string path) {
+			return this->loadShader(name, path, "fragment");
 		}
 
 		gfx::shaders::Shader* Context::getShader(std::string name) {
@@ -102,7 +102,7 @@ namespace remus {
 		/****************
 		* Mesh
 		****************/
-		Context* Context::loadMeshes(std::string path, std::string prefix, bool genOBB) {
+		Context* Context::loadMeshes(std::string prefix, std::string path, bool genOBB) {
 			logger::logNotice("Loading meshes from file \"" + path + "\" with prefix \"" + prefix + "\"");
 
 			auto meshes = this->getMeshesFromFile(path, genOBB);
@@ -178,8 +178,16 @@ namespace remus {
 			}
 			
 			std::unordered_map<std::string, gfx::models::Mesh*> meshes;
-			meshes[std::string(mesh->mName.C_Str())] = new gfx::models::Mesh(vertices, indices, genOBB);
+			if(!mesh->mName.C_Str()) {
+				throw std::runtime_error("Mesh requires a name.");
+			}
 
+			auto meshName = std::string(mesh->mName.C_Str());
+			if(meshName.length() == 0) {
+				throw std::runtime_error("Mesh name cannot be empty");
+			}
+
+			meshes[std::string(mesh->mName.C_Str())] = new gfx::models::Mesh(vertices, indices, genOBB);
 			return meshes;
 		}
 
@@ -204,12 +212,14 @@ namespace remus {
 		/****************
 		* Model
 		****************/
-		Context* Context::loadModel(std::string path, std::string name, bool genOBB) {
+		Context* Context::loadModel(std::string name, std::string path, bool addMeshesToContext, bool genOBB) {
 			logger::logNotice("Loading model \"" + name + "\" from file \"" + path + "\"");
 
 			auto meshes = this->getMeshesFromFile(path, genOBB);
-			for(auto &it : meshes) {
-				this->loadMesh(name + "_" + it.first, it.second);
+			if(addMeshesToContext) {
+				for(auto &it : meshes) {
+					this->loadMesh(name + "_" + it.first, it.second);
+				}
 			}
 
 			this->loadModel(name, new gfx::models::Model(meshes));
@@ -281,13 +291,88 @@ namespace remus {
 		* TextureSet
 		****************/
 		Context* Context::loadTextureSet(std::string name, gfx::texture::TextureSet* textureSet) {
-			logger::logNotice("Creating texture set \"" + name + "\"");
+			logger::logNotice("Loading texture set \"" + name + "\"");
 			if(this->textureSets.count(name) > 0) {
 				logger::logWarning("Texture set already exists with name \"" + name + "\"");
 			}
 
 			this->textureSets[name] = textureSet;
-			logger::logNotice("Created texture set \"" + name + "\"");
+			logger::logNotice("Loading texture set \"" + name + "\"");
+			return this;
+		}
+
+		Context* Context::createTextureSet(std::string name) {
+			logger::logNotice("Creating new texture set \"" + name + "\"");
+			if(this->textureSets.count(name) > 0) {
+				logger::logWarning("Texture set already exists with name \"" + name + "\"");
+			}
+
+			this->textureSets[name] = new gfx::texture::TextureSet();
+			logger::logNotice("Created new texture set \"" + name + "\"");
+			return this;
+		}
+
+		Context* Context::addTextureSetGeneric(std::string name, std::vector<std::string> textureNames, std::vector<std::string> textureSetNames) {
+			if(textureNames.size() != textureSetNames.size()) {
+				throw std::runtime_error("Cannot add to texture set \"" + name + "\": No 1-to-1 mapping of texture names to texture set names");
+			}
+
+			std::string nameMapStr = "";
+			for(auto i = 0; i < textureNames.size(); i++) {
+				nameMapStr += "(" + textureNames[i] + ", " + textureSetNames[i] + "), ";
+			}
+
+			logger::logNotice("Adding generic textures to texture set \"" + name + "\": " + nameMapStr);
+			if(this->textureSets.count(name) == 0) {
+				this->createTextureSet(name);	
+			}
+
+			for(auto i = 0; i < textureNames.size(); i++) {
+				auto tex = this->getTexture2D(textureNames[i]);
+				this->textureSets[name]->addTexture(tex, textureSetNames[i]);
+			}
+
+			logger::logNotice("Added generic textures to texture set \"" + name + "\"");
+			return this;
+		}
+
+		Context* Context::addTextureSetDiffuse(std::string name, std::vector<std::string> textureNames) {
+			std::string namesStr = "";
+			for(auto i = 0; i < textureNames.size(); i++) {
+				namesStr += textureNames[i] + ", ";
+			}
+
+			logger::logNotice("Adding diffuse textures to texture set \"" + name + "\": " + namesStr);
+			if(this->textureSets.count(name) == 0) {
+				this->createTextureSet(name);	
+			}
+
+			for(auto i = 0; i < textureNames.size(); i++) {
+				auto tex = this->getTexture2D(textureNames[i]);
+				this->textureSets[name]->addDiffuse(tex);
+			}
+
+			logger::logNotice("Added diffuse textures to texture set \"" + name + "\"");
+			return this;
+		}
+
+		Context* Context::addTextureSetSpecular(std::string name, std::vector<std::string> textureNames) {
+			std::string namesStr = "";
+			for(auto i = 0; i < textureNames.size(); i++) {
+				namesStr += textureNames[i] + ", ";
+			}
+
+			logger::logNotice("Adding specular textures to texture set \"" + name + "\": " + namesStr);
+			if(this->textureSets.count(name) == 0) {
+				this->createTextureSet(name);	
+			}
+
+			for(auto i = 0; i < textureNames.size(); i++) {
+				auto tex = this->getTexture2D(textureNames[i]);
+				this->textureSets[name]->addSpecular(tex);
+			}
+
+			logger::logNotice("Added specular textures to texture set \"" + name + "\"");
 			return this;
 		}
 

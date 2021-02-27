@@ -1,15 +1,11 @@
-#include <remus/engine/driver/driver.h>
+#include <remus/engine/scene/driver.h>
 
 namespace remus {
 	namespace engine {
-		namespace driver {
+		namespace scene {
 
-			Driver::Driver() {
-
-			}
-
-			Driver::Driver(Context* c) {
-				this->setContext(c);
+			Driver::Driver(Context* context) {
+				this->context = context;
 			}
 
 			void Driver::addScene(scene::Scene* s) noexcept {
@@ -33,13 +29,8 @@ namespace remus {
 
 			void Driver::render(GLfloat time, GLfloat delta) {
 				for(auto s : this->activeScenes) {
-					s->setContext(this->context);
 					s->render(time, delta);
 				}
-			}
-
-			void Driver::setContext(Context* c) {
-				this->context = c;
 			}
 
 			Driver::~Driver() {

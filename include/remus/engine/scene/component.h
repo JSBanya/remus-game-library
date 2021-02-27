@@ -17,7 +17,7 @@ namespace remus {
 			*/
 			class SceneComponent {
 			public:
-				SceneComponent(std::string name);
+				SceneComponent(std::string name, Context* context = nullptr);
 
 				virtual void tick(GLint num);
 				virtual void render(gfx::view::Camera* camera, GLfloat time, GLfloat deltax);
@@ -27,10 +27,6 @@ namespace remus {
 
 				inline std::string getName() {
 					return this->name;
-				}
-
-				inline void setContext(Context* c) noexcept {
-					this->context = c;
 				}
 
 			protected:

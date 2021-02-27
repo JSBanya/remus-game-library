@@ -32,21 +32,21 @@ namespace remus {
 			// Shaders
 			Context* loadShader(std::string name, gfx::shaders::Shader* shader);
 			Context* loadShader(std::string name, std::string pathToFile, std::string shaderType);
-			Context* loadShaderVertex(std::string path, std::string name);
-			Context* loadShaderFragment(std::string path, std::string name);
+			Context* loadShaderVertex(std::string name, std::string path);
+			Context* loadShaderFragment(std::string name, std::string path);
 			gfx::shaders::Shader* getShader(std::string name);
 
 			Context* loadShaderProgram(std::string name, std::vector<std::string> s);
 			gfx::shaders::ShaderProgram* getShaderProgram(std::string name);
 
 			// Mesh
-			Context* loadMeshes(std::string path, std::string prefix, bool genOBB = true);
+			Context* loadMeshes(std::string prefix, std::string path, bool genOBB = true);
 			Context* loadMesh(std::string, gfx::models::Mesh*);
 
 			gfx::models::Mesh* getMesh(std::string name);
 
 			// Model
-			Context* loadModel(std::string path, std::string name, bool genOBB = true);
+			Context* loadModel(std::string name, std::string path, bool addMeshesToContext = true, bool genOBB = true);
 			Context* loadModel(std::string name, gfx::models::Model*);
 			Context* loadModel(std::string name, std::vector<std::string> meshNames);
 			gfx::models::Model* getModel(std::string name);
@@ -57,6 +57,10 @@ namespace remus {
 
 			// TextureSet
 			Context* loadTextureSet(std::string name, gfx::texture::TextureSet* textureSet);
+			Context* createTextureSet(std::string name);
+			Context* addTextureSetGeneric(std::string name, std::vector<std::string> textureNames, std::vector<std::string> textureSetNames);
+			Context* addTextureSetDiffuse(std::string name, std::vector<std::string> textureNames);
+			Context* addTextureSetSpecular(std::string name, std::vector<std::string> textureNames);
 			gfx::texture::TextureSet* getTextureSet(std::string name);
 
 			// Font

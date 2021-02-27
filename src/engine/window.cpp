@@ -7,6 +7,13 @@ namespace remus {
 			if(width <= 0) throw std::invalid_argument("Width less than or equal to 0");
 			if(height <= 0) throw std::invalid_argument("Height less than or equal to 0");
 
+			// Init OpenGL as needed
+			if(Window::openWindows == 0) {
+				logger::logNotice("Performing first time graphics environment setup.");
+				Window::initEnvironment();
+			}
+			Window::openWindows += 1;
+
 			this->monitor = NULL;
 			if(fullscreen) {
 				this->monitor = glfwGetPrimaryMonitor();
@@ -23,12 +30,10 @@ namespace remus {
 			GLFWwindow* sharedWindow = NULL;
 			if(share != NULL) {
 				sharedWindow = share->getWindow();
+				this->pointersLoaded = share->isPointersLoaded();
 			}
 
 			this->window = glfwCreateWindow(width, height, this->title.c_str(), this->monitor, sharedWindow);
-			if(share != NULL) {
-				this->glPointersLoaded = share->isGlPointersLoaded();
-			}
 
 			// Create utils
 			this->mouse = new utils::Mouse(this->window);
@@ -36,7 +41,7 @@ namespace remus {
 		}
 
 		void Window::clear() noexcept {
-			glClear(this->clearMode); // No check for isCurrent for performance
+			glClear(this->clearMode);
 		}
 
 		void Window::update() noexcept {
@@ -58,9 +63,15 @@ namespace remus {
 			return this;
 		}
 
-		Window* Window::makeCurrent() {
+		Window* Window::attach() {
 			this->isCurrent = true;
 			glfwMakeContextCurrent(this->window);
+			if(!this->isPointersLoaded()) {
+				this->loadGlPointers();
+			}
+			if(!this->viewportSet) {
+				this->setViewport(this->width, this->height);
+			}
 			return this;
 		}
 
@@ -72,91 +83,99 @@ namespace remus {
 			return this;
 		}
 
-		Window* Window::refreshGLContext() {
-			if(!this->isCurrent) {
-				throw std::logic_error("Cannot refresh GL context on non-current window");
+		void Window::loadGlPointers() {
+			if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+				throw std::runtime_error("Failed to initialize GLAD");
 			}
+			this->pointersLoaded = true;
+		}
 
-			if(!this->glPointersLoaded) {
-				this->loadGlPointers();
-			}
+		Window* Window::setViewport(GLint width, GLint height) {
+			this->assertAttached();
 
-			// Reset states
-			this->clearMode = GL_COLOR_BUFFER_BIT;
+			glViewport(0, 0, this->width, this->height);
+			this->viewportSet = true;
+			return this;
+		}
 
-			// Depth Test
-			if(this->depthTest) {
+		Window* Window::setGlDepthTest(bool value) {
+			this->assertAttached();
+
+			if(value) {
 				glEnable(GL_DEPTH_TEST);
 				this->clearMode |= GL_DEPTH_BUFFER_BIT;
 			} else {
 				glDisable(GL_DEPTH_TEST);
+				this->clearMode &= ~GL_DEPTH_BUFFER_BIT;
 			}
 
-			// Blend
-			if(this->blend) {
+			return this;
+		}
+
+		Window* Window::setGlBlend(bool value) {
+			this->assertAttached();
+
+			if(value) {
 				glEnable(GL_BLEND);
 				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			} else {
 				glDisable(GL_BLEND);
 			}
-
-			// MSAA
-			glfwWindowHint(GLFW_SAMPLES, this->msaa);
-			if(this->msaa > 0) {
-				glEnable(GL_MULTISAMPLE);
-			} else {
-				glDisable(GL_MULTISAMPLE);
-			}
-
-			// Clear color
-			glClearColor(this->clearColor.r, this->clearColor.g, this->clearColor.b, this->clearColor.a);
-
-			// Viewport
-			glViewport(0, 0, this->width, this->height);
-
 			return this;
 		}
 
-		Window* Window::loadGlPointers() {
-			if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-				throw std::runtime_error("Failed to initialize GLAD");
-			}
-			this->glPointersLoaded = true;
-			return this;
-		}
+		Window* Window::setMSAA(GLint value) {
+			this->assertAttached();
 
-		Window* Window::setGlDepthTest(bool value) noexcept {
-			this->depthTest = value;
-			return this;
-		}
-
-		Window* Window::setGlBlend(bool value) noexcept {
-			this->blend = value;
-			return this;
-		}
-
-		Window* Window::setMSAA(GLint value) noexcept {
 			if(value < 0) {
 				logger::logWarning("Unable to set MSAA to a negative value.");
 				return this;
 			}
 
-			this->msaa = value;
+			glfwWindowHint(GLFW_SAMPLES, value);
+			if(value > 0) {
+				glEnable(GL_MULTISAMPLE);
+			} else {
+				glDisable(GL_MULTISAMPLE);
+			}
+
 			return this;
 		}
 
-		Window* Window::setClearColor(glm::vec4 rgba) noexcept {
-			this->clearColor = rgba;
+		Window* Window::setClearColor(GLfloat r, GLfloat g, GLfloat b, GLfloat a) {
+			glClearColor(r, g, b, a);
+			this->clearMode |= GL_COLOR_BUFFER_BIT;
 			return this;
-		}
-
-		Window* Window::setClearColor(GLfloat r, GLfloat g, GLfloat b, GLfloat a) noexcept {
-			return this->setClearColor(glm::vec4(r, g, b, a));
 		}	
 
 		Window::~Window() {
 			delete this->mouse;
 			glfwDestroyWindow(this->window);
+
+			Window::openWindows -= 1;
+			if(Window::openWindows == 0) {
+				logger::logNotice("Tearing down graphics environment (no more open windows).");
+				Window::destroyEnvironment();
+			}
+		}
+
+		void Window::assertAttached() {
+			if(!this->isCurrent) 
+				throw std::logic_error("Window is not attached.");
+		}
+
+		void Window::initEnvironment() {
+			logger::logNotice("Initializing GLFW - Core Profile " + std::to_string(Window::openGLMajor) + "." + std::to_string(Window::openGLMinor));
+			glfwInit();
+			glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+			glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+			glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+			glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+		}
+
+		void Window::destroyEnvironment() {
+			logger::logNotice("Destroying GLFW.");
+			glfwTerminate();
 		}
 	}
 }

@@ -4,14 +4,6 @@ namespace remus {
 	namespace engine {
 		namespace driver {
 
-			StackDriver::StackDriver() {
-
-			}
-
-			StackDriver::StackDriver(Context* c) : Driver(c) {
-
-			}
-
 			void StackDriver::newState() noexcept {
 				this->states.push(this->activeScenes);
 				this->clearScenes();

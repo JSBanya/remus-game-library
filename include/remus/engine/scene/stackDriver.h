@@ -12,9 +12,7 @@ namespace remus {
 
 			class StackDriver : public Driver {
 			public:
-				StackDriver();
-				StackDriver(Context* c);
-
+			
 				void newState() noexcept;
 				void popState() noexcept;
 

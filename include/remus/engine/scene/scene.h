@@ -23,8 +23,8 @@ namespace remus {
 			*/
 			class Scene {
 			public:
-				Scene(std::string name);
-				Scene(std::string name, gfx::view::Camera* c);
+				Scene(std::string name, Context* context = nullptr);
+				Scene(std::string name, gfx::view::Camera* c, Context* context = nullptr);
 
 				// Operations
 				virtual void tick(GLint num); // Happens every game tick
@@ -36,7 +36,7 @@ namespace remus {
 
 				// Setters
 				inline void setCamera(gfx::view::Camera* c) noexcept {
-					this->camera = c;
+					this->activeCamera = c;
 				}
 
 				inline void setContext(Context* c) noexcept {
@@ -45,14 +45,14 @@ namespace remus {
 
 				// Getters
 				inline gfx::view::Camera* getCamera() noexcept {
-					return this->camera;
+					return this->activeCamera;
 				}
 
 				virtual std::vector<SceneComponent*> getComponents() noexcept;
 
 			protected:
 				std::string name;
-				gfx::view::Camera* camera;
+				gfx::view::Camera* activeCamera;
 				std::vector<SceneComponent*> components;
 				Context* context;
 			};

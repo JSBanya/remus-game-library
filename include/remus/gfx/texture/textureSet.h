@@ -15,7 +15,7 @@ namespace remus {
 			class TextureSet {
 			public:
 				TextureSet(std::unordered_map<std::string, Texture2D*> textures = {}, std::vector<Texture2D*> diffuseTextures = {}, std::vector<Texture2D*> specularTextures = {});
-				TextureSet(std::vector<Texture2D*> textures, std::vector<Texture2D*> names, std::vector<Texture2D*> diffuseTextures = {}, std::vector<Texture2D*> specularTextures = {});
+				TextureSet(std::vector<Texture2D*> textures, std::vector<std::string> names, std::vector<Texture2D*> diffuseTextures = {}, std::vector<Texture2D*> specularTextures = {});
 
 				void addDiffuse(Texture2D* diffuseTexture) noexcept;
 				void addSpecular(Texture2D* specularTexture) noexcept;
@@ -28,6 +28,7 @@ namespace remus {
 				void removeTexture(std::string name);
 
 				void bind(shaders::ShaderProgram* shader);
+				void unbind();
 
 				inline std::vector<Texture2D*> getDiffuse() noexcept {
 					return this->diffuseTextures;

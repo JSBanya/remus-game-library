@@ -4,13 +4,13 @@ namespace remus {
 	namespace gfx {
 		namespace texture {
 
-			TextureSet::TextureSet(std::unordered_map<std::string, Texture2D*> textures = {}, std::vector<Texture2D*> diffuseTextures = {}, std::vector<Texture2D*> specularTextures = {}) {
+			TextureSet::TextureSet(std::unordered_map<std::string, Texture2D*> textures, std::vector<Texture2D*> diffuseTextures, std::vector<Texture2D*> specularTextures) {
 				this->diffuseTextures = diffuseTextures;
 				this->specularTextures = specularTextures;
 				this->textures = textures;
 			}
 
-			TextureSet::TextureSet(std::vector<Texture2D*> textures, std::vector<Texture2D*> names, std::vector<Texture2D*> diffuseTextures = {}, std::vector<Texture2D*> specularTextures = {}) {
+			TextureSet::TextureSet(std::vector<Texture2D*> textures, std::vector<std::string> names, std::vector<Texture2D*> diffuseTextures, std::vector<Texture2D*> specularTextures) {
 				if(textures.size() != names.size()) {
 					throw std::logic_error("List of textures provided to texture set with unequal number of names.");
 				}
@@ -78,6 +78,27 @@ namespace remus {
 					glActiveTexture(GL_TEXTURE0 + texNum);
 					shader->setUniform(it.first, texNum);
 					it.second->bind();
+					texNum++;
+				}
+			}
+
+			void TextureSet::unbind() {
+				auto texNum = 0;
+				for(auto i = 0; i < this->diffuseTextures.size(); i++) {
+					glActiveTexture(GL_TEXTURE0 + texNum);
+					this->diffuseTextures[i]->unbind();
+					texNum++;
+				}
+
+				for(auto i = 0; i < this->specularTextures.size(); i++) {
+					glActiveTexture(GL_TEXTURE0 + texNum);
+					this->specularTextures[i]->unbind();
+					texNum++;
+				}
+
+				for(auto &it : this->textures) {
+					glActiveTexture(GL_TEXTURE0 + texNum);
+					it.second->unbind();
 					texNum++;
 				}
 			}

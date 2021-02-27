@@ -7,27 +7,24 @@
 
 namespace remus {
 	namespace engine {
-		namespace driver {
+		namespace scene {
 
 			class Driver {
 			public:
-				Driver();
-				Driver(Context* c);
+				Driver(Context* context = nullptr);
 
-				virtual void addScene(scene::Scene* s) noexcept;
-				virtual void removeScene(scene::Scene* s) noexcept;
+				virtual void addScene(Scene* s) noexcept;
+				virtual void removeScene(Scene* s) noexcept;
 				virtual void clearScenes() noexcept;
 
 				virtual void tick(GLint num);
 				virtual void render(GLfloat time, GLfloat delta);
 
-				void setContext(Context* c);
-
 				virtual ~Driver();
 
 			protected:
 				Context* context;
-				std::vector<scene::Scene*> activeScenes;
+				std::vector<Scene*> activeScenes;
 
 			};
 

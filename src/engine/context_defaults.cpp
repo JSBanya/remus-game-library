@@ -51,7 +51,6 @@ namespace remus {
 			const std::string default_fragment_shader_source = 
 			R"(
 			#version 330 core
-			in vec2 texCoord;
 			out vec4 FragColor;
 			uniform vec4 color;
 			void main() {

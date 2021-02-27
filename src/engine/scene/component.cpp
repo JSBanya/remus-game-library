@@ -4,8 +4,9 @@ namespace remus {
 	namespace engine {
 		namespace scene {
 
-			SceneComponent::SceneComponent(std::string name) {
+			SceneComponent::SceneComponent(std::string name, Context* c) {
 				this->name = name;
+				this->context = context;
 				logger::logNotice("Created new scene component \"" + this->name + "\".");
 			}
 

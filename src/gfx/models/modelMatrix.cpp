@@ -5,7 +5,7 @@ namespace remus {
 		namespace models {
 
 			ModelMatrix::ModelMatrix(ModelMode mode) {
-				
+				this->reset(mode);
 			}
 
 		}

@@ -3,19 +3,19 @@
 namespace remus {
 	namespace engine {
 		namespace scene {
-			Scene::Scene(std::string name) {
+			Scene::Scene(std::string name, Context* context) {
 				this->name = name;
+				this->context = context;
 				logger::logNotice("Created new scene with name \"" + name + "\".");
 			}
 			
-			Scene::Scene(std::string name, gfx::view::Camera* c) : Scene(name) {
-				this->camera = c;
+			Scene::Scene(std::string name, gfx::view::Camera* c, Context* context) : Scene(name, context) {
+				this->activeCamera = c;
 			}
 
 			void Scene::tick(GLint num) {
 				auto components = this->getComponents();
 				for(auto c : components) {
-					c->setContext(this->context);
 					c->tick(num);
 				}
 			}
@@ -23,8 +23,7 @@ namespace remus {
 			void Scene::render(GLfloat time, GLfloat delta) {
 				auto components = this->getComponents();
 				for(auto c : components) {
-					c->setContext(this->context);
-					c->render(this->camera, time, delta);
+					c->render(this->activeCamera, time, delta);
 				}
 			}
 
