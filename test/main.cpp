@@ -12,12 +12,17 @@ int main() {
 	// Setup window
 	window->attach();
 	window->setClearColor(0, 0, 0, 1.0);
+	window->setGlDepthTest(true);
+	window->setMSAA(4);
+	window->setMouseInputBound();
+
+	auto mouse = window->getMouse();
 
 	// Load resources
 	loadResources(runtime->getContext());
 
 	// Setup driver
-	auto driver = new TestDriver(runtime->getContext());
+	auto driver = new TestDriver(runtime->getContext(), mouse);
 
 	// Start
 	runtime->run(driver);

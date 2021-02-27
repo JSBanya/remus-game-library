@@ -1,8 +1,8 @@
 #include "testDriver.h"
 
-TestDriver::TestDriver(remus::engine::Context* context) : remus::engine::scene::Driver(context) {
+TestDriver::TestDriver(remus::engine::Context* context, remus::utils::Mouse* mouse) : remus::engine::scene::Driver(context) {
 	// Setup scene
-	this->addScene(new TestScene(context));
+	this->addScene(new TestScene(context, mouse));
 }
 
 TestDriver::~TestDriver() {

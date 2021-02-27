@@ -48,19 +48,32 @@ namespace remus {
 
 				inline void addYaw(GLfloat deg) noexcept {
 					this->yaw += deg;
+					this->update();
+				}
+
+				inline void setYaw(GLfloat deg) noexcept {
+					this->yaw = deg;
+					this->update();
 				}
 
 				inline void addPitch(GLfloat deg) noexcept {
 					this->pitch += deg;
+					this->update();
+				}
+
+				inline void setPitch(GLfloat deg) noexcept {
+					this->pitch = deg;
+					this->update();
 				}
 
 				inline glm::mat4 getViewMatrix() noexcept {
 					return glm::lookAt(this->position, this->position + this->forward, this->up);
 				}
 
-				void update() noexcept;
-
 				virtual ~Camera();
+
+			protected:
+				void update() noexcept;
 
 			protected:
 				glm::mat4 projection;

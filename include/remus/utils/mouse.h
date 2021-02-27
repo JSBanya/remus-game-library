@@ -20,29 +20,34 @@ namespace remus {
 
 			inline void setX(GLfloat x) noexcept {
 				this->x = x;
-				if(this->x < minX) this->x = this->minX;
-				if(this->x > maxX) this->x = this->maxX;
 			}
 
 			inline void setY(GLfloat y) noexcept {
 				this->y = y;
-				if(this->y < minY) this->y = this->minY;
-				if(this->y > maxY) this->y = this->maxY;
 			}
 
 			inline void setXY(GLfloat x, GLfloat y) noexcept {
-				this->setX(x);
-				this->setY(y);
+				this->x = x;
+				this->y = y;
 			}
 
-			inline GLfloat getX(bool normalized) noexcept {
+			inline GLfloat getX(bool clipped = false, bool normalized = false) noexcept {
+				auto x = this->x;
+				if(clipped) {
+					if(x < this->minX) x = this->minX;
+					if(x > this->maxY) x = this->maxX;
+				}
 				if(!normalized)
-					return this->x;
-				return 2 * ((this->x - this->minX) / (this->maxX - this->minX)) - 1.0f;
+					return x;
+				return 2 * ((x - this->minX) / (this->maxX - this->minX)) - 1.0f;
 			}
 
-			inline GLfloat getY(bool normalized, bool inversed) noexcept {
+			inline GLfloat getY(bool clipped = false, bool normalized = false, bool inversed = false) noexcept {
 				auto y = this->y;
+				if(clipped) {
+					if(y < this->minY) y = this->minY;
+					if(y > this->maxY) y = this->maxY;
+				}
 				if(inversed) 
 					y = this->maxY - y;
 				if(!normalized) 
