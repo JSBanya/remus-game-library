@@ -12,7 +12,7 @@ namespace remus {
 
 			class PerspectiveCamera : public Camera {
 			public:
-				PerspectiveCamera(GLfloat fov, GLint width, GLint height, GLfloat near, GLfloat far);
+				PerspectiveCamera(GLfloat fov, GLint width, GLint height, GLfloat near, GLfloat far, CameraAxisType axisType = CameraAxisType::ALWAYS_LOCAL);
 			};
 
 		}

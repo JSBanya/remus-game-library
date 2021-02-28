@@ -11,7 +11,7 @@ namespace remus {
 
 			class OrthographicCamera : public Camera {
 			public:
-				OrthographicCamera(GLfloat left, GLfloat right, GLfloat bottom, GLfloat top, GLfloat near, GLfloat far);
+				OrthographicCamera(GLfloat left, GLfloat right, GLfloat bottom, GLfloat top, GLfloat near, GLfloat far, CameraAxisType axisType = CameraAxisType::ALWAYS_LOCAL);
 			};
 
 		}

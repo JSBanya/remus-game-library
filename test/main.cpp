@@ -16,13 +16,11 @@ int main() {
 	window->setMSAA(4);
 	window->setMouseInputBound();
 
-	auto mouse = window->getMouse();
-
 	// Load resources
 	loadResources(runtime->getContext());
 
 	// Setup driver
-	auto driver = new TestDriver(runtime->getContext(), mouse);
+	auto driver = new TestDriver(window, runtime->getContext());
 
 	// Start
 	runtime->run(driver);

@@ -8,9 +8,15 @@ namespace remus {
 	namespace gfx {
 		namespace view {
 
+			enum CameraAxisType {
+				ALWAYS_LOCAL,
+				ALWAYS_GLOBAL,
+				FIXED_PITCH
+			};
+
 			class Camera {
 			public:
-				Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), float yaw = -90.0f, float pitch = 0.0f);
+				Camera(CameraAxisType axisType);
 
 				inline glm::mat4 getProjection() noexcept {
 					return this->projection;
@@ -24,10 +30,14 @@ namespace remus {
 					this->position = glm::vec3(x, y, z);
 				}
 
+				inline glm::vec3 getPos() noexcept {
+					return this->position;
+				}
+
 				inline void addPos(glm::vec3 xyz) noexcept {
-					this->position += this->right * xyz.x;
-					this->position += this->up * xyz.y;
-					this->position += this->forward * xyz.z;
+					this->position += this->movementRight * xyz.x;
+					this->position += this->movementUp * xyz.y;
+					this->position += this->movementForward * xyz.z;
 				}
 
 				inline void addPos(GLfloat x, GLfloat y, GLfloat z) noexcept {
@@ -56,6 +66,10 @@ namespace remus {
 					this->update();
 				}
 
+				inline GLfloat getYaw() noexcept {
+					return this->yaw;
+				}
+
 				inline void addPitch(GLfloat deg) noexcept {
 					this->pitch += deg;
 					this->update();
@@ -66,8 +80,12 @@ namespace remus {
 					this->update();
 				}
 
+				inline GLfloat getPitch() noexcept {
+					return this->pitch;
+				}
+
 				inline glm::mat4 getViewMatrix() noexcept {
-					return glm::lookAt(this->position, this->position + this->forward, this->up);
+					return glm::lookAt(this->position, this->position + this->viewForward, this->viewUp);
 				}
 
 				virtual ~Camera();
@@ -76,15 +94,22 @@ namespace remus {
 				void update() noexcept;
 
 			protected:
-				glm::mat4 projection;
+				CameraAxisType axisType;
+				
+				glm::mat4 projection = glm::mat4(1.0f);
+				GLfloat yaw = 0.0f;
+				GLfloat pitch = 0.0f;
 
-				glm::vec3 position;
-				glm::vec3 forward;
-				glm::vec3 right;
-				glm::vec3 up;
+				glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f);
 
-				GLfloat yaw;
-				GLfloat pitch;
+				glm::vec3 movementForward = glm::vec3(0.0f, 0.0f, -1.0f);
+				glm::vec3 viewForward = glm::vec3(0.0f, 0.0f, -1.0f);
+
+				glm::vec3 movementRight = glm::vec3(1.0f, 0.0f, 0.0f);
+				glm::vec3 viewRight = glm::vec3(1.0f, 0.0f, 0.0f);
+
+				glm::vec3 movementUp = glm::vec3(0.0f, 1.0f, 0.0f);
+				glm::vec3 viewUp = glm::vec3(0.0f, 1.0f, 0.0f);
 			};
 			
 		}

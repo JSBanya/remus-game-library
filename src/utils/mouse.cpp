@@ -14,7 +14,9 @@ namespace remus {
 		}
 
 		Mouse::~Mouse() {
-			glfwSetCursorPosCallback(this->window, NULL);
+			if(this->window) {
+				glfwSetCursorPosCallback(this->window, NULL);
+			}
 			Mouse::instances.erase(this->window);
 		}
 

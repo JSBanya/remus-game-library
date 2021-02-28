@@ -57,12 +57,12 @@ namespace remus {
 
 			~Mouse();
 			
-		private:
+		protected:
 			GLFWwindow* window;
 			GLfloat minX, maxX, minY, maxY;
 			GLfloat x, y;
 			
-		private:
+		protected:
 			static void posCallback(GLFWwindow* window, double xpos, double ypos);
 			static inline std::unordered_map<GLFWwindow*, Mouse*> instances;
 		};

@@ -25,6 +25,7 @@ add_library(remus STATIC
 	src/engine/scene/component.cpp
 
 	src/utils/mouse.cpp
+	src/utils/keyboard.cpp
 
 	src/gfx/entity/entity.cpp
 

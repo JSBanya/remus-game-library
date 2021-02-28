@@ -38,6 +38,8 @@ namespace remus {
 			// Create utils
 			this->mouse = new utils::Mouse(this->window);
 			this->mouse->setViewport(0, this->width, 0, this->height);
+
+			this->keyboard = new utils::Keyboard(this->window);
 		}
 
 		void Window::clear() noexcept {
@@ -81,6 +83,10 @@ namespace remus {
 				this->isCurrent = false;
 			}
 			return this;
+		}
+
+		void Window::close() {
+			glfwSetWindowShouldClose(this->window, true);
 		}
 
 		void Window::loadGlPointers() {
@@ -150,6 +156,7 @@ namespace remus {
 
 		Window::~Window() {
 			delete this->mouse;
+			delete this->keyboard;
 			glfwDestroyWindow(this->window);
 
 			Window::openWindows -= 1;

@@ -6,6 +6,7 @@
 #include <stdexcept>
 #include <string>
 #include <remus/utils/mouse.h>
+#include <remus/utils/keyboard.h>
 #include <remus/logging/logger.h>
 
 namespace remus {
@@ -17,7 +18,6 @@ namespace remus {
 			
 			void clear() noexcept;
 			void update() noexcept;
-
 			
 			Window* setMouseInputNormal() noexcept; // Makes the cursor visible and behaving normally
 			Window* setMouseInputHidden() noexcept; // Makes the cursor invisible when it is over the content area of the window but does not restrict the cursor from leaving
@@ -25,6 +25,7 @@ namespace remus {
 
 			Window* attach();
 			Window* detach() noexcept;
+			void close();
 
 			Window* setViewport(GLint width, GLint height);
 			Window* setGlDepthTest(bool value);
@@ -34,6 +35,7 @@ namespace remus {
 
 			inline bool isPointersLoaded() noexcept { return this->pointersLoaded; };
 			inline utils::Mouse* getMouse() noexcept { return this->mouse; };
+			inline utils::Keyboard* getKeyboard() noexcept { return this->keyboard; };
 			inline GLFWwindow* getWindow() noexcept { return this->window; };
 			inline GLFWmonitor* getMonitor() noexcept { return this->monitor; };
 			inline GLint getWidth() noexcept { return this->width; };
@@ -50,6 +52,7 @@ namespace remus {
 		protected:
 			GLFWwindow* window;
 			utils::Mouse* mouse;
+			utils::Keyboard* keyboard;
 
 			bool pointersLoaded;
 			bool viewportSet = false;

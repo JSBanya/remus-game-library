@@ -4,22 +4,35 @@ namespace remus {
 	namespace gfx {
 		namespace view {
 
-			Camera::Camera(glm::vec3 position,  float yaw, float pitch) {
-				this->position = position;
-				this->yaw = yaw;
-				this->pitch = pitch;
+			Camera::Camera(CameraAxisType axisType) {
+				this->axisType = axisType;
 				this->update();
 			}
 
 			void Camera::update() noexcept {
+				// Update view axis
 				glm::vec3 forward;
 				forward.x = cos(glm::radians(this->yaw)) * cos(glm::radians(this->pitch));
 				forward.y = sin(glm::radians(this->pitch));
 				forward.z = sin(glm::radians(this->yaw)) * cos(glm::radians(this->pitch));
-				this->forward = glm::normalize(forward);
+				this->viewForward = glm::normalize(forward);
 
-				this->right = glm::normalize(glm::cross(this->forward, glm::vec3(0.0f, 1.0f, 0.0f)));
-				this->up = glm::normalize(glm::cross(this->right, this->forward));
+				this->viewRight = glm::normalize(glm::cross(this->viewForward, glm::vec3(0.0f, 1.0f, 0.0f)));
+				this->viewUp = glm::normalize(glm::cross(this->viewRight, this->viewForward));
+
+				// Update movement axis
+				if(this->axisType == ALWAYS_LOCAL) {
+					// Same as view axis (i.e. always local to current state)
+					this->movementForward = this->viewForward;
+					this->movementRight = this->viewRight;
+					this->movementUp = this->viewUp;
+				} else if(this->axisType == FIXED_PITCH) {
+					// Axis changes with yaw only (not affected by pitch)
+					this->movementForward = glm::normalize(glm::vec3(forward.x, this->movementForward.y, forward.z));
+					this->movementRight = glm::normalize(glm::cross(this->movementForward, glm::vec3(0.0f, 1.0f, 0.0f)));
+				} else if(this->axisType == ALWAYS_GLOBAL) {
+					// No update to movement axis
+				}
 			}
 
 			Camera::~Camera() {
