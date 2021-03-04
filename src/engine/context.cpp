@@ -121,7 +121,7 @@ namespace remus {
 			}
 
 			Assimp::Importer importer;
-			const aiScene* scene = importer.ReadFile(p, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs);
+			const aiScene* scene = importer.ReadFile(p, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices);
 			if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
 				throw std::runtime_error("Unable to load meshes from file \"" + path + "\": " + importer.GetErrorString());
 			}
@@ -156,7 +156,7 @@ namespace remus {
 			for(unsigned int i = 0; i < mesh->mNumVertices; i++) {
 				gfx::models::Vertex vertex;
 				vertex.Position = glm::vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
-
+				
 				// Normals
 				if(mesh->HasNormals()) {
 					vertex.Normal = glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
@@ -187,7 +187,7 @@ namespace remus {
 				throw std::runtime_error("Mesh name cannot be empty");
 			}
 
-			meshes[std::string(mesh->mName.C_Str())] = new gfx::models::Mesh(vertices, indices, genOBB);
+			meshes[meshName] = new gfx::models::Mesh(vertices, indices, genOBB);
 			return meshes;
 		}
 
@@ -216,15 +216,18 @@ namespace remus {
 			logger::logNotice("Loading model \"" + name + "\" from file \"" + path + "\"");
 
 			auto meshes = this->getMeshesFromFile(path, genOBB);
-			if(addMeshesToContext) {
-				for(auto &it : meshes) {
+
+			std::string meshNames = "";
+			for(auto &it : meshes) {
+				meshNames += it.first + ", ";
+				if(addMeshesToContext) {
 					this->loadMesh(name + "_" + it.first, it.second);
 				}
 			}
 
 			this->loadModel(name, new gfx::models::Model(meshes));
 
-			logger::logNotice("Loaded model \"" + name + "\" from file \"" + path + "\"");
+			logger::logNotice("Loaded model \"" + name + "\" (meshes: " + meshNames + ") from file \"" + path + "\"");
 			return this;
 		}
 

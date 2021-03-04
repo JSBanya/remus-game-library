@@ -23,6 +23,7 @@ private:
 	remus::utils::Mouse* mouse;
 	remus::utils::Keyboard* keyboard;
 
+	bool mouseCoordsInitialized = false;
 	float lastX = 0.0f;
 	float lastY = 0.0f;
 

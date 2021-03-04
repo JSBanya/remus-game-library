@@ -10,7 +10,7 @@ namespace remus {
 
 				this->addAttribute(0, 3, sizeof(Vertex), 0);
 				this->addAttribute(1, 3, sizeof(Vertex), offsetof(Vertex, Normal));
-				this->addAttribute(2, 3, sizeof(Vertex), offsetof(Vertex, TexCoords));
+				this->addAttribute(2, 2, sizeof(Vertex), offsetof(Vertex, TexCoords));
 
 				if(genOBB) {
 					this->generateOBB(vertices);

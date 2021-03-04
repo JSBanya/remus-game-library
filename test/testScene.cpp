@@ -5,14 +5,18 @@ TestScene::TestScene(remus::engine::Context* context, remus::utils::Mouse* mouse
 	this->activeCamera = new remus::gfx::view::PerspectiveCamera(90, Settings::width, Settings::height, 0.1, 100, remus::gfx::view::CameraAxisType::FIXED_PITCH);
 	this->mouse = mouse;
 	this->keyboard = keyboard;
-	
-	this->lastX = mouse->getX(false, true);
-	this->lastY = mouse->getY(false, true, true);
 }
 
 void TestScene::render(GLfloat time, GLfloat delta) {
 	auto x = mouse->getX(false, true);
 	auto y = mouse->getY(false, true, true);
+
+	if(!this->mouseCoordsInitialized) {
+		// First time mouse initialization
+		this->mouseCoordsInitialized = true;
+		this->lastX = x;
+		this->lastY = y;
+	}
 
 	auto diffX = x - lastX;
 	this->lastX = x;

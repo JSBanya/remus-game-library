@@ -4,8 +4,8 @@
 
 class Settings {
 public:
-	inline static int width = 1920;
-	inline static int height = 1080;
-	inline static bool fullscreen = true;
+	inline static int width = 1600;
+	inline static int height = 900;
+	inline static bool fullscreen = false;
 	inline static std::string title = "Remus Test Environment";
 };
