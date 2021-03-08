@@ -57,6 +57,7 @@ namespace remus {
 					this->rotation = glm::mat4(1.0f);
 					this->modelMatrix = glm::mat4(1.0f);
 					this->modelUpdated = false;
+					this->recalcNormalMatrix = true;
 					this->modelMode = mode;
 					return this;
 				}
@@ -65,6 +66,7 @@ namespace remus {
 					if(this->modelMode == LOCAL)
 						throw std::logic_error("resetRotation not supported under LOCAL mode.");
 					this->modelUpdated = true;
+					this->recalcNormalMatrix = true;
 					this->rotation = glm::mat4(1.0f);
 					return this;
 				}
@@ -73,6 +75,7 @@ namespace remus {
 					if(this->modelMode == LOCAL)
 						throw std::logic_error("setRotation not supported under LOCAL mode.");
 					this->modelUpdated = true;
+					this->recalcNormalMatrix = true;
 					this->rotation = m;
 					return this;
 				}
@@ -84,7 +87,8 @@ namespace remus {
 						this->modelUpdated = true;
 						this->rotation = glm::rotate(this->rotation, glm::radians(deg), axis);
 					}
-					
+
+					this->recalcNormalMatrix = true;
 					return this;
 				}
 
@@ -104,6 +108,7 @@ namespace remus {
 					if(this->modelMode == LOCAL)
 						throw std::logic_error("setPos not supported under LOCAL mode.");
 					this->modelUpdated = true;
+					this->recalcNormalMatrix = true;
 					this->pos = xyz;
 					return this;
 				}
@@ -119,7 +124,8 @@ namespace remus {
 						this->modelUpdated = true;
 						this->pos += xyz;
 					}
-					
+
+					this->recalcNormalMatrix = true;
 					return this;
 				}
 
@@ -131,6 +137,7 @@ namespace remus {
 					if(this->modelMode == LOCAL)
 						throw std::logic_error("setScale not supported under LOCAL mode.");
 					this->modelUpdated = true;
+					this->recalcNormalMatrix = true;
 					this->size = xyz;
 					return this;
 				}
@@ -143,6 +150,7 @@ namespace remus {
 					if(this->modelMode == LOCAL)
 						throw std::logic_error("addScale not supported under LOCAL mode.");
 					this->modelUpdated = true;
+					this->recalcNormalMatrix = true;
 					this->size += xyz;
 					return this;
 				}
@@ -159,19 +167,30 @@ namespace remus {
 						this->size *= xyz;
 					}
 					
+					this->recalcNormalMatrix = true;
 					return this;
 				}
 
 				inline ModelMatrix* scale(GLfloat x, GLfloat y, GLfloat z) noexcept {
 					return this->scale(glm::vec3(x, y, z));
 				}
+
+				inline glm::mat3 getNormalMatrix() noexcept {
+					if(this->recalcNormalMatrix) {
+						this->normalMatrix = glm::mat3(glm::transpose(glm::inverse(this->get())));
+						this->recalcNormalMatrix = false;
+					}
+					return this->normalMatrix;
+				}
 			
 			private:
 				bool modelUpdated = false;
+				bool recalcNormalMatrix = true;
 				glm::vec3 pos;
 				glm::mat4 rotation;
 				glm::vec3 size;
 				glm::mat4 modelMatrix;
+				glm::mat3 normalMatrix;
 				ModelMode modelMode = WORLD;
 			};
 

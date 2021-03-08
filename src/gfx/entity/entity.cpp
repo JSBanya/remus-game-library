@@ -4,46 +4,32 @@ namespace remus {
 	namespace gfx {
 		namespace entity {
 
-			Entity::Entity(models::Model* model, shaders::ShaderProgram* shader, std::unordered_map<std::string, texture::TextureSet*> textureSets) {
+			Entity::Entity(models::Model* model, shaders::ShaderProgram* shader, std::unordered_map<std::string, texture::Material*> materials) {
 				this->model = model;
 				this->shader = shader;
-				this->textureSets = textureSets;
+				this->materials = materials;
 			}
 
-			Entity::Entity(models::Model* model, shaders::ShaderProgram* shader, std::vector<texture::TextureSet*> textureSets, std::vector<std::string> names) {
-				if(textureSets.size() != names.size()) {
+			Entity::Entity(models::Model* model, shaders::ShaderProgram* shader, std::vector<texture::Material*> materials, std::vector<std::string> names) {
+				if(materials.size() != names.size()) {
 					throw std::logic_error("List of texture sets provided to entity with unequal number of names.");
 				}
 				
 				this->model = model;
 				this->shader = shader;
-				for(auto i = 0; i < textureSets.size(); i++) {
-					this->addTextureSet(names[i], textureSets[i]);
+				for(auto i = 0; i < materials.size(); i++) {
+					this->addMaterial(names[i], materials[i]);
 				}
 			}
 
-			void Entity::addTextureSet(std::string meshName, texture::TextureSet* textureSet) {
-				if(this->textureSets.count(meshName) != 0) {
+			void Entity::addMaterial(std::string meshName, texture::Material* material) {
+				if(this->materials.count(meshName) != 0) {
 					logger::logWarning("Duplicate texture set added to entity with name \"" + meshName + "\"");
 				}
 
-				this->textureSets[meshName] = textureSet;
+				this->materials[meshName] = material;
 			}
-
-			void Entity::draw(view::Camera* camera) noexcept {
-				this->shader->bind();
-				this->shader->setUniform("modelMatrix", this->modelMatrix.get());
-				if(camera != nullptr) {
-					this->shader->setUniform("viewMatrix", camera->getViewMatrix());
-					this->shader->setUniform("projectionMatrix", camera->getProjection());
-				}
-
-				this->applyUniforms();
-
-				this->model->draw(this->shader, this->textureSets);
-				this->shader->unbind();
-			}
-
+			
 			void Entity::applyUniforms() noexcept {
 				for(std::pair<std::string, bool> e : this->shaderUniformBool) this->shader->setUniform(e.first, e.second);
 				for(std::pair<std::string, GLint> e : this->shaderUniformInt) this->shader->setUniform(e.first, e.second);

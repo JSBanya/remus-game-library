@@ -50,7 +50,7 @@ namespace remus {
 					return (this->obb != nullptr); 
 				}
 
-				inline void draw() noexcept {
+				inline void drawTriangles() noexcept {
 					this->vao->bind();
 					glDrawElements(GL_TRIANGLES, this->ebo->getNumIndices(), GL_UNSIGNED_INT, 0);
 					this->vao->unbind();

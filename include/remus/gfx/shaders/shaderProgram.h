@@ -63,6 +63,11 @@ namespace remus {
                     glUniform4fv(glGetUniformLocation(this->ID, name.c_str()), 1, glm::value_ptr(v4));
                 }
 
+                // Set uniform: mat3
+                inline void setUniform(const std::string name, glm::mat3 m) noexcept {
+                    glUniformMatrix3fv(glGetUniformLocation(this->ID, name.c_str()), 1, GL_FALSE, glm::value_ptr(m));
+                }
+
                 // Set uniform: mat4
                 inline void setUniform(const std::string name, glm::mat4 m) noexcept {
                     glUniformMatrix4fv(glGetUniformLocation(this->ID, name.c_str()), 1, GL_FALSE, glm::value_ptr(m));

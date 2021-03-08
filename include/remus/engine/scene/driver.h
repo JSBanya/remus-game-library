@@ -19,6 +19,7 @@ namespace remus {
 
 				virtual void tick(GLint num);
 				virtual void render(GLfloat time, GLfloat delta);
+				virtual void draw();
 
 				virtual ~Driver();
 

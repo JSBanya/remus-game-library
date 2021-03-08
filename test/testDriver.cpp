@@ -1,8 +1,11 @@
 #include "testDriver.h"
 
 TestDriver::TestDriver(remus::engine::Window* window, remus::engine::Context* context) : remus::engine::scene::Driver(context) {
+	this->camera = new remus::gfx::view::PerspectiveCamera(90, Settings::width, Settings::height, 0.1, 100, remus::gfx::view::CameraAxisType::FIXED_PITCH);
+
 	// Setup scene
-	this->addScene(new TestScene(context, window->getMouse(), window->getKeyboard()));
+	
+	this->addScene(new TestScene(context, camera, window->getMouse(), window->getKeyboard()));
 	this->window = window;
 	this->keyboard = window->getKeyboard();
 }
@@ -19,4 +22,5 @@ TestDriver::~TestDriver() {
 	for(auto scene : this->activeScenes) {
 		delete scene;
 	}
+	delete this->camera;
 }

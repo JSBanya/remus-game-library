@@ -5,7 +5,7 @@
 #include <glm/glm.hpp>
 #include <remus/gfx/models/model.h>
 #include <remus/gfx/shaders/shaderProgram.h>
-#include <remus/gfx/texture/textureSet.h>
+#include <remus/gfx/texture/material.h>
 #include <remus/gfx/models/modelMatrix.h>
 #include <remus/gfx/view/camera.h>
 #include <remus/logging/logger.h>
@@ -22,17 +22,15 @@ namespace remus {
 
 			class Entity {
 			public:
-				Entity(models::Model* model, shaders::ShaderProgram* shader, std::unordered_map<std::string, texture::TextureSet*> textureSets = {});
-				Entity(models::Model* model, shaders::ShaderProgram* shader, std::vector<texture::TextureSet*> textureSets, std::vector<std::string> names);
+				Entity(models::Model* model, shaders::ShaderProgram* shader, std::unordered_map<std::string, texture::Material*> materials = {});
+				Entity(models::Model* model, shaders::ShaderProgram* shader, std::vector<texture::Material*> materials, std::vector<std::string> names);
 
-				void addTextureSet(std::string meshName, texture::TextureSet* textureSet);
+				void addMaterial(std::string meshName, texture::Material* material);
 
 				inline Entity* setShader(shaders::ShaderProgram* s) noexcept {
 					this->shader = s;
 					return this;
 				}
-
-				void draw(view::Camera* camera = nullptr) noexcept;
 
 				std::vector<RayCastIntersection> raycast(GLfloat x, GLfloat y, view::Camera* camera = nullptr);
 
@@ -76,10 +74,13 @@ namespace remus {
 					return this;
 				}
 
+				void applyUniforms() noexcept;
+
 				inline models::Model* getModel() noexcept { return this->model; }
 				inline models::ModelMatrix& getModelMatrix() noexcept { return this->modelMatrix; }
 				inline shaders::ShaderProgram* getShader() noexcept { return this->shader; }
-				inline texture::TextureSet* getTextureSet(std::string meshName) { return this->textureSets[meshName]; }
+				inline std::unordered_map<std::string, texture::Material*> getMaterials() { return this->materials; }
+				inline texture::Material* getMaterial(std::string meshName) { return this->materials[meshName]; }
 
 				inline std::unordered_map<std::string, bool> getUniformsBool() noexcept { return this->shaderUniformBool; }
 				inline std::unordered_map<std::string, GLint> getUniformsInt() noexcept { return this->shaderUniformInt; }
@@ -91,12 +92,9 @@ namespace remus {
 				virtual ~Entity();
 
 			protected:
-				void applyUniforms() noexcept;
-
-			protected:
 				models::Model* model;
 				shaders::ShaderProgram* shader;
-				std::unordered_map<std::string, texture::TextureSet*> textureSets;
+				std::unordered_map<std::string, texture::Material*> materials;
 
 				models::ModelMatrix modelMatrix;
 

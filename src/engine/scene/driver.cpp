@@ -21,15 +21,21 @@ namespace remus {
 			}
 
 			void Driver::tick(GLint num) {
-				for(auto s : this->activeScenes) {
+				for(auto &s : this->activeScenes) {
 					s->setContext(this->context);
 					s->tick(num);
 				}
 			}
 
 			void Driver::render(GLfloat time, GLfloat delta) {
-				for(auto s : this->activeScenes) {
+				for(auto &s : this->activeScenes) {
 					s->render(time, delta);
+				}
+			}
+
+			void Driver::draw() {
+				for(auto &s : this->activeScenes) {
+					s->draw();
 				}
 			}
 

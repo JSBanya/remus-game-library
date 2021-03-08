@@ -31,6 +31,7 @@ namespace remus {
 			Window* setGlDepthTest(bool value);
 			Window* setGlBlend(bool value);
 			Window* setMSAA(GLint value);
+			Window* setFaceCulling(bool value);
 			Window* setClearColor(GLfloat r, GLfloat g, GLfloat b, GLfloat a);
 
 			inline bool isPointersLoaded() noexcept { return this->pointersLoaded; };
@@ -67,7 +68,7 @@ namespace remus {
 			GLint clearMode = GL_COLOR_BUFFER_BIT;
 
 		protected:
-			inline static GLint openGLMajor = 3, openGLMinor = 3;
+			inline static GLint openGLMajor = 4, openGLMinor = 3;
 			inline static GLint openWindows = 0;
 
 			static void initEnvironment();

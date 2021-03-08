@@ -15,8 +15,7 @@
 #include <remus/gfx/models/rectangle.h>
 #include <remus/gfx/shaders/shaderProgram.h>
 #include <remus/gfx/texture/writableTexture2d.h>
-#include <remus/gfx/texture/textureSet.h>
-#include <remus/gfx/entity/entity.h>
+#include <remus/gfx/models/modelMatrix.h>
 #include <remus/logging/logger.h>
 
 namespace remus {
@@ -47,8 +46,6 @@ namespace remus {
 				std::unordered_map<char, Character*> characters;
 
 				models::Model* characterModel;
-				entity::Entity* characterEntity;
-				TextureSet* characterTextureSet;
 			};
 
 		}

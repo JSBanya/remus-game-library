@@ -34,21 +34,6 @@ namespace remus {
 				return this->meshes[name];
 			}
 
-			void Model::draw(shaders::ShaderProgram* shader, std::unordered_map<std::string, texture::TextureSet*> textures) {
-				for(auto &it : this->meshes) {
-					bool hasTextureSet = (textures.count(it.first) != 0);
-					if(hasTextureSet) {
-						textures[it.first]->bind(shader);
-					}
-
-					it.second->draw();
-
-					if(hasTextureSet) {
-						textures[it.first]->unbind();
-					}
-				}
-			}
-
 			bool Model::hasOBB() noexcept {
 				for(auto &it : this->meshes) {
 					if(it.second->hasOBB()) {

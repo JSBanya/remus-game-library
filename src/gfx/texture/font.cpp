@@ -59,13 +59,9 @@ namespace remus {
 
 				// Initialize objects for text generation
 				characterModel = new models::Rectangle(2.0f, 2.0f);
-				characterTextureSet = new TextureSet();
-				characterEntity = new entity::Entity(characterModel, (shaders::ShaderProgram*)nullptr, { characterTextureSet }, { "rectangle" });
 			}
 
 			Texture2D* Font::getText(std::string text, shaders::ShaderProgram* generationShader) {
-				characterEntity->setShader(generationShader);
-
 				// Find width and height of final texture
 				GLfloat width = 0.0f;
 				GLfloat height = 0.0f;
@@ -112,24 +108,23 @@ namespace remus {
 					GLfloat sizeY = 2.0 * (ch->size.y / height);
 					
 
-					auto mm = this->characterEntity->getModelMatrix();
-					mm.reset(models::LOCAL);
-					mm.translate(xpos, ypos, 0.0f);
-					mm.scale(sizeX, sizeY, 1.0f);
+					models::ModelMatrix modelMatrix(models::LOCAL);
+					modelMatrix.translate(xpos, ypos, 0.0f);
+					modelMatrix.scale(sizeX, sizeY, 1.0f);
 
-					this->characterTextureSet->addTexture(ch->texture, "character");
-					
 					generationShader->bind();
-					this->characterEntity->draw();
+					glActiveTexture(GL_TEXTURE0);
+					generationShader->setUniform("character", 0);
+					ch->texture->bind();
+					generationShader->setUniform("modelMatrix", modelMatrix.get());
+					this->characterModel->getMesh("rectangle")->drawTriangles();
+					
 					x += (ch->advance >> 6);
 				}
 
 				textTexture->stopWrite();
 
 				generationShader->unbind();
-				characterEntity->setShader(nullptr);
-				this->characterTextureSet->removeTexture("character");
-
 				return textTexture;
 			}
 
@@ -139,9 +134,7 @@ namespace remus {
 					delete c.second;
 				}
 
-				delete this->characterEntity;
 				delete this->characterModel;
-				delete this->characterTextureSet;
 			}
 
 		}

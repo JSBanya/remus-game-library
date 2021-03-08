@@ -47,6 +47,7 @@ namespace remus {
 				auto delta = currentTime - lastFrame;
 				lastFrame = currentTime;
 				driver->render(timeSinceStart, delta);
+				driver->draw();
 
 				this->mainWindow->update();
 				fps++;

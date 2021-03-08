@@ -14,6 +14,7 @@ int main() {
 	window->setClearColor(0, 0, 0, 1.0);
 	window->setGlDepthTest(true);
 	window->setMSAA(4);
+	window->setFaceCulling(true);
 	window->setMouseInputBound();
 
 	// Load resources
@@ -39,5 +40,5 @@ void loadResources(remus::engine::Context* context) {
 	context->loadShaderFragment("test_shader_frag", "./resources/testShader.frag");
 	context->loadShaderProgram("test_shader", {"test_shader_vert", "test_shader_frag"});
 	context->loadTexture2D("cube_texture", "./resources/CubeTexture.png", true);
-	context->addTextureSetGeneric("cube_textures", {"cube_texture"}, {"texture1"});
+	context->createMaterial("cube_material", "cube_texture", "", 1.0);
 }

@@ -148,6 +148,17 @@ namespace remus {
 			return this;
 		}
 
+		Window* Window::setFaceCulling(bool value) {
+			this->assertAttached();
+			if(value) {
+				glEnable(GL_CULL_FACE);
+				glFrontFace(GL_CCW);
+			} else {
+				glDisable(GL_CULL_FACE);
+			}
+			return this;
+		}
+
 		Window* Window::setClearColor(GLfloat r, GLfloat g, GLfloat b, GLfloat a) {
 			glClearColor(r, g, b, a);
 			this->clearMode |= GL_COLOR_BUFFER_BIT;

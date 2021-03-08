@@ -291,98 +291,37 @@ namespace remus {
 
 
 		/****************
-		* TextureSet
+		* Material
 		****************/
-		Context* Context::loadTextureSet(std::string name, gfx::texture::TextureSet* textureSet) {
-			logger::logNotice("Loading texture set \"" + name + "\"");
-			if(this->textureSets.count(name) > 0) {
-				logger::logWarning("Texture set already exists with name \"" + name + "\"");
+		Context* Context::loadMaterial(std::string name, gfx::texture::Material* material) {
+			logger::logNotice("Loading material \"" + name + "\"");
+			if(this->materials.count(name) > 0) {
+				logger::logWarning("Material already exists with name \"" + name + "\"");
 			}
 
-			this->textureSets[name] = textureSet;
-			logger::logNotice("Loading texture set \"" + name + "\"");
+			this->materials[name] = material;
+			logger::logNotice("Loading material \"" + name + "\"");
 			return this;
 		}
 
-		Context* Context::createTextureSet(std::string name) {
-			logger::logNotice("Creating new texture set \"" + name + "\"");
-			if(this->textureSets.count(name) > 0) {
-				logger::logWarning("Texture set already exists with name \"" + name + "\"");
+		Context* Context::createMaterial(std::string name, std::string diffuse, std::string specular, GLfloat shininess) {
+			logger::logNotice("Creating new material \"" + name + "\" with diffuse=" + diffuse + ", specular=" + specular + ", shininess=" + std::to_string(shininess));
+			if(this->materials.count(name) > 0) {
+				logger::logWarning("Material already exists with name \"" + name + "\"");
 			}
 
-			this->textureSets[name] = new gfx::texture::TextureSet();
-			logger::logNotice("Created new texture set \"" + name + "\"");
+			auto diffuseTex = (diffuse.size() == 0 ? nullptr : this->getTexture2D(diffuse));
+			auto specularTex = (specular.size() == 0 ? nullptr : this->getTexture2D(specular));
+
+			this->materials[name] = new gfx::texture::Material(diffuseTex, specularTex, shininess);
+			logger::logNotice("Created new material \"" + name + "\"");
 			return this;
 		}
 
-		Context* Context::addTextureSetGeneric(std::string name, std::vector<std::string> textureNames, std::vector<std::string> textureSetNames) {
-			if(textureNames.size() != textureSetNames.size()) {
-				throw std::runtime_error("Cannot add to texture set \"" + name + "\": No 1-to-1 mapping of texture names to texture set names");
-			}
-
-			std::string nameMapStr = "";
-			for(auto i = 0; i < textureNames.size(); i++) {
-				nameMapStr += "(" + textureNames[i] + ", " + textureSetNames[i] + "), ";
-			}
-
-			logger::logNotice("Adding generic textures to texture set \"" + name + "\": " + nameMapStr);
-			if(this->textureSets.count(name) == 0) {
-				this->createTextureSet(name);	
-			}
-
-			for(auto i = 0; i < textureNames.size(); i++) {
-				auto tex = this->getTexture2D(textureNames[i]);
-				this->textureSets[name]->addTexture(tex, textureSetNames[i]);
-			}
-
-			logger::logNotice("Added generic textures to texture set \"" + name + "\"");
-			return this;
-		}
-
-		Context* Context::addTextureSetDiffuse(std::string name, std::vector<std::string> textureNames) {
-			std::string namesStr = "";
-			for(auto i = 0; i < textureNames.size(); i++) {
-				namesStr += textureNames[i] + ", ";
-			}
-
-			logger::logNotice("Adding diffuse textures to texture set \"" + name + "\": " + namesStr);
-			if(this->textureSets.count(name) == 0) {
-				this->createTextureSet(name);	
-			}
-
-			for(auto i = 0; i < textureNames.size(); i++) {
-				auto tex = this->getTexture2D(textureNames[i]);
-				this->textureSets[name]->addDiffuse(tex);
-			}
-
-			logger::logNotice("Added diffuse textures to texture set \"" + name + "\"");
-			return this;
-		}
-
-		Context* Context::addTextureSetSpecular(std::string name, std::vector<std::string> textureNames) {
-			std::string namesStr = "";
-			for(auto i = 0; i < textureNames.size(); i++) {
-				namesStr += textureNames[i] + ", ";
-			}
-
-			logger::logNotice("Adding specular textures to texture set \"" + name + "\": " + namesStr);
-			if(this->textureSets.count(name) == 0) {
-				this->createTextureSet(name);	
-			}
-
-			for(auto i = 0; i < textureNames.size(); i++) {
-				auto tex = this->getTexture2D(textureNames[i]);
-				this->textureSets[name]->addSpecular(tex);
-			}
-
-			logger::logNotice("Added specular textures to texture set \"" + name + "\"");
-			return this;
-		}
-
-		gfx::texture::TextureSet* Context::getTextureSet(std::string name) {
-			if(this->textureSets.count(name) == 0) 
-				throw std::runtime_error("No texture set with name \"" + name + "\"");
-			return this->textureSets[name];
+		gfx::texture::Material* Context::getMaterial(std::string name) {
+			if(this->materials.count(name) == 0) 
+				throw std::runtime_error("No material with name \"" + name + "\"");
+			return this->materials[name];
 		}
 
 
@@ -437,7 +376,7 @@ namespace remus {
 			for(auto &it : this->meshes) delete it.second;
 			for(auto &it : this->models) delete it.second;
 			for(auto &it : this->texture2D) delete it.second;
-			for(auto &it : this->textureSets) delete it.second;
+			for(auto &it : this->materials) delete it.second;
 			for(auto &it : this->fonts) delete it.second;
 			logger::logNotice("Destroyed context.");
 		}

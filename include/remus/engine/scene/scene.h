@@ -12,29 +12,23 @@
 #include <remus/engine/entity/entity.h>
 #include <remus/utils/mouse.h>
 #include <remus/engine/context.h>
+#include <remus/gfx/lighting/lights.h>
 
 namespace remus {
 	namespace engine {
 		namespace scene {
 
-
-			/*
-			* A scene is a collection of related components under a single projection and view matrix (i.e. camera)
-			*/
 			class Scene {
 			public:
-				Scene(std::string name, Context* context = nullptr);
 				Scene(std::string name, gfx::view::Camera* c, Context* context = nullptr);
 
-				// Operations
 				virtual void tick(GLint num); // Happens every game tick
 				virtual void render(GLfloat time, GLfloat delta); // Happens every frame (depends on fps)
+				virtual void draw();
 
-				inline void addComponent(SceneComponent* c) noexcept {
-					this->components.push_back(c);
-				}
+				virtual void addEntity(gfx::entity::Entity* e) noexcept;
+				virtual std::vector<gfx::entity::Entity*> getEntities() noexcept;
 
-				// Setters
 				inline void setCamera(gfx::view::Camera* c) noexcept {
 					this->activeCamera = c;
 				}
@@ -43,18 +37,19 @@ namespace remus {
 					this->context = c;
 				}
 
-				// Getters
 				inline gfx::view::Camera* getCamera() noexcept {
 					return this->activeCamera;
 				}
 
-				virtual std::vector<SceneComponent*> getComponents() noexcept;
-
 			protected:
 				std::string name;
 				gfx::view::Camera* activeCamera;
-				std::vector<SceneComponent*> components;
 				Context* context;
+
+				gfx::lighting::Lights lights;
+				glm::vec3 ambient = glm::vec3(1.0);
+
+				std::vector<gfx::entity::Entity*> entities;
 			};
 
 		}

@@ -6,7 +6,7 @@
 #include <remus/gfx/models/mesh.h>
 #include <remus/logging/logger.h>
 #include <remus/gfx/shaders/shaderProgram.h>
-#include <remus/gfx/texture/textureSet.h>
+#include <remus/gfx/texture/material.h>
 
 namespace remus {
 	namespace gfx {
@@ -24,9 +24,7 @@ namespace remus {
 				inline std::unordered_map<std::string, Mesh*> getMeshes() {
 					return this->meshes;
 				}
-
-				void draw(shaders::ShaderProgram* shader, std::unordered_map<std::string, texture::TextureSet*> textures = {});
-
+				
 				bool hasOBB() noexcept;
 
 				virtual ~Model();

@@ -22,7 +22,6 @@ add_library(remus STATIC
 	src/engine/scene/driver.cpp
 	src/engine/scene/stackDriver.cpp
 	src/engine/scene/scene.cpp
-	src/engine/scene/component.cpp
 
 	src/utils/mouse.cpp
 	src/utils/keyboard.cpp
@@ -38,6 +37,9 @@ add_library(remus STATIC
 	src/gfx/buffers/rbo.cpp
 	src/gfx/buffers/vao.cpp
 	src/gfx/buffers/vbo.cpp
+	src/gfx/buffers/ssbo.cpp
+
+	src/gfx/lighting/lights.cpp
 
 	src/gfx/models/model.cpp
 	src/gfx/models/mesh.cpp
@@ -48,7 +50,7 @@ add_library(remus STATIC
 	src/gfx/shaders/shaderProgram.cpp
 
 	src/gfx/texture/texture2d.cpp
-	src/gfx/texture/textureSet.cpp
+	src/gfx/texture/material.cpp
 	src/gfx/texture/writableTexture2d.cpp
 	src/gfx/texture/font.cpp
 
@@ -87,7 +89,6 @@ install(EXPORT remusConfig
 add_executable(remus_test 
 	test/main.cpp
 	test/testScene.cpp
-	test/testComponent.cpp
 	test/testDriver.cpp
 )
 

@@ -19,7 +19,7 @@
 #include <remus/gfx/shaders/shaderProgram.h>
 #include <remus/gfx/models/model.h>
 #include <remus/gfx/texture/texture2d.h>
-#include <remus/gfx/texture/textureSet.h>
+#include <remus/gfx/texture/material.h>
 #include <remus/engine/entity/entity.h>
 
 namespace remus {
@@ -55,13 +55,10 @@ namespace remus {
 			Context* loadTexture2D(std::string name, std::string path, bool genMipmaps = true);
 			gfx::texture::Texture2D* getTexture2D(std::string name);
 
-			// TextureSet
-			Context* loadTextureSet(std::string name, gfx::texture::TextureSet* textureSet);
-			Context* createTextureSet(std::string name);
-			Context* addTextureSetGeneric(std::string name, std::vector<std::string> textureNames, std::vector<std::string> textureSetNames);
-			Context* addTextureSetDiffuse(std::string name, std::vector<std::string> textureNames);
-			Context* addTextureSetSpecular(std::string name, std::vector<std::string> textureNames);
-			gfx::texture::TextureSet* getTextureSet(std::string name);
+			// Material
+			Context* loadMaterial(std::string name, gfx::texture::Material* material);
+			Context* createMaterial(std::string name, std::string diffuse = "", std::string specular = "", GLfloat shininess = 1.0);
+			gfx::texture::Material* getMaterial(std::string name);
 
 			// Font
 			Context* loadFont(std::string name, std::string path, GLint size);
@@ -83,7 +80,7 @@ namespace remus {
 			std::unordered_map<std::string, gfx::models::Mesh*> meshes;
 			std::unordered_map<std::string, gfx::models::Model*> models;
 			std::unordered_map<std::string, gfx::texture::Texture2D*> texture2D;
-			std::unordered_map<std::string, gfx::texture::TextureSet*> textureSets;
+			std::unordered_map<std::string, gfx::texture::Material*> materials;
 			std::unordered_map<std::string, gfx::texture::Font*> fonts;
 		};
 			

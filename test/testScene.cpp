@@ -1,10 +1,26 @@
 #include "testScene.h"
 
-TestScene::TestScene(remus::engine::Context* context, remus::utils::Mouse* mouse, remus::utils::Keyboard* keyboard) : remus::engine::scene::Scene("Test Scene", context) {
-	this->addComponent(new TestComponent(context));
-	this->activeCamera = new remus::gfx::view::PerspectiveCamera(90, Settings::width, Settings::height, 0.1, 100, remus::gfx::view::CameraAxisType::FIXED_PITCH);
+TestScene::TestScene(remus::engine::Context* context, remus::gfx::view::Camera* camera, remus::utils::Mouse* mouse, remus::utils::Keyboard* keyboard) 
+	: remus::engine::scene::Scene("Test Scene", camera, context) 
+{
 	this->mouse = mouse;
 	this->keyboard = keyboard;
+
+	this->cubeEntity = new remus::gfx::entity::Entity(
+							context->getModel("cube"), 
+							context->getShaderProgram("test_shader"), 
+							{context->getMaterial("cube_material")}, 
+							{"Cube"}
+						);
+	this->addEntity(this->cubeEntity);
+	this->cubeEntity->getModelMatrix().setPos(5.0f, 0.0f, 0.0f);
+
+	this->ambient = glm::vec3(0.2f, 0.2f, 0.2f);
+	this->lights.addPointLight(glm::vec3(3.5f, 0.0f, 0.0f), glm::vec3(1.0, 1.0, 1.0), 1.0f, 0.0014, 0.000007);
+}
+
+void TestScene::tick(GLint num) {
+	this->cubeEntity->getModelMatrix().rotateY(1.0f);
 }
 
 void TestScene::render(GLfloat time, GLfloat delta) {
@@ -58,8 +74,5 @@ void TestScene::render(GLfloat time, GLfloat delta) {
 }
 
 TestScene::~TestScene() {
-	for(auto c : this->getComponents()) {
-		delete c;
-	}
-	delete this->activeCamera;
+	delete this->cubeEntity;
 }
