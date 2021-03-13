@@ -14,6 +14,7 @@
 #include <remus/engine/context.h>
 #include <remus/gfx/lighting/pointLights.h>
 #include <remus/gfx/lighting/directionalLights.h>
+#include <remus/gfx/lighting/spotLights.h>
 
 namespace remus {
 	namespace engine {
@@ -49,6 +50,7 @@ namespace remus {
 
 				gfx::lighting::PointLights pointLights;
 				gfx::lighting::DirectionalLights directionaLights;
+				gfx::lighting::SpotLights spotLights;
 				glm::vec3 ambient = glm::vec3(1.0);
 
 				std::vector<gfx::entity::Entity*> entities;

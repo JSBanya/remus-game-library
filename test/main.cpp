@@ -42,13 +42,13 @@ void loadResources(remus::engine::Context* context) {
 
 	// Floor
 	context->loadModel("floor", "./resources/floor.glb", false, true);
-	context->loadTexture2D("floor_texture", "./resources/FloorTexture.png", true);
-	context->loadTexture2D("floor_specular", "./resources/FloorSpecular.png", true);
+	context->loadTexture2D("floor_texture", "./resources/FloorTexture.png", false);
+	context->loadTexture2D("floor_specular", "./resources/FloorSpecular.png", false);
 	context->createMaterial("floor_material", "floor_texture", "floor_specular", 32.0);
 
 	// Cube
 	context->loadModel("cube", "./resources/cube.glb", false, true);
 	context->loadTexture2D("cube_texture", "./resources/CubeTexture.png", true);
-	context->loadTexture2D("cube_specular", "./resources/CubeSpecular.png", true);
+	context->loadTexture2D("cube_specular", "./resources/CubeSpecular.png", false);
 	context->createMaterial("cube_material", "cube_texture", "cube_specular", 16.0);
 }

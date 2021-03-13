@@ -1,53 +1,33 @@
 #pragma once
 
-#include <glad/glad.h>
-#include <vector>
-#include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <stdexcept>
-#include <string>
-#include <remus/gfx/buffers/ssbo.h>
+#include <remus/gfx/lighting/lights.h>
 
 namespace remus {
 	namespace gfx {
 		namespace lighting {
 
 			struct PointLight {
-				glm::vec3 Position;
-				glm::vec3 Color;
+				glm::vec4 Position;
+				glm::vec4 Color;
 
 				GLfloat AttenuationConstant;
 				GLfloat AttenuationLinear;
 				GLfloat AttenuationQuadratic;
 			};
 
-			class PointLights {
+			class PointLights : public Lights<PointLight> {
 			public:
-				PointLights();
-
-				// Point Lights
-				size_t add(PointLight light) noexcept;
-				size_t add(glm::vec3 position, glm::vec3 color, GLfloat attentuationConstant, GLfloat attentuationLinear, GLfloat attentuationQuadratic) noexcept;
-				PointLight* get(size_t index);
+				PointLights() : Lights(48) {}
+				size_t newLight(glm::vec4 position, glm::vec4 color, GLfloat attentuationConstant, GLfloat attentuationLinear, GLfloat attentuationQuadratic) noexcept;
 
 				void forceUpdate(size_t index);
-				void updatePosition(size_t index, glm::vec3 position);
-				void updateColor(size_t index, glm::vec3 color);
+				void updatePosition(size_t index, glm::vec4 position);
+				void updateColor(size_t index, glm::vec4 color);
 				void updateAttenuationConstant(size_t index, GLfloat attentuationConstant);
 				void updateAttenuationLinear(size_t index, GLfloat attentuationLinear);
 				void updateAttenuationQuadratic(size_t index, GLfloat attentuationQuadratic);
 
-				void bind(GLint binding);
-				void unbind();
-
-				~PointLights();
-			protected:
-				std::vector<PointLight> lights;
-				buffers::SSBO ssbo;
-				bool updateSSBO = true;
-			
-			protected:
-				// PointLight size/padding constants
+			private:
 				const size_t SIZE = 48;
 				const size_t POSITION_OFFSET = 0;
 				const size_t POSITION_SIZE = 16;

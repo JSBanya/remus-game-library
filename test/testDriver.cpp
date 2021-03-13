@@ -1,7 +1,7 @@
 #include "testDriver.h"
 
 TestDriver::TestDriver(remus::engine::Window* window, remus::engine::Context* context) : remus::engine::scene::Driver(context) {
-	this->camera = new remus::gfx::view::PerspectiveCamera(90, Settings::width, Settings::height, 0.1, 100, remus::gfx::view::CameraAxisType::FIXED_PITCH);
+	this->camera = new remus::gfx::view::PerspectiveCamera(70, Settings::width, Settings::height, 0.1, 100, remus::gfx::view::CameraAxisType::FIXED_PITCH);
 
 	// Setup scene
 	

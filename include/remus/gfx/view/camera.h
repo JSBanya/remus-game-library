@@ -88,6 +88,14 @@ namespace remus {
 					return glm::lookAt(this->position, this->position + this->viewForward, this->viewUp);
 				}
 
+				inline glm::vec3 getMovementForward() noexcept {
+					return this->movementForward;
+				}
+
+				inline glm::vec3 getViewForward() noexcept {
+					return this->viewForward;
+				}
+
 				virtual ~Camera();
 
 			protected:

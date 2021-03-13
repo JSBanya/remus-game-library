@@ -38,6 +38,7 @@ namespace remus {
 					shader->setUniform("ambient", this->ambient);
 					this->pointLights.bind(0);
 					this->directionaLights.bind(1);
+					this->spotLights.bind(2);
 
 					// Draw model mesh-by-mesh
 					auto model = e->getModel();
