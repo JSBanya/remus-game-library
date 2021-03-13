@@ -26,6 +26,12 @@ namespace remus {
 					return this->lights.size()-1;
 				}
 
+				size_t remove(size_t index) noexcept {
+					this->lights.erase(this->lights.begin() + index);
+					this->updateSSBO = true;
+					return this->lights.size();
+				}
+
 				T* get(size_t index) {
 					if(index < 0 || index >= this->lights.size()) {
 						throw std::runtime_error("Light " + std::to_string(index) + " does not exist. Number of lights: " + std::to_string(this->lights.size()));

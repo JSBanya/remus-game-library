@@ -13,6 +13,8 @@ namespace remus {
 				GLfloat AttenuationConstant;
 				GLfloat AttenuationLinear;
 				GLfloat AttenuationQuadratic;
+
+				GLint Active;
 			};
 
 			class PointLights : public Lights<PointLight> {
@@ -26,6 +28,7 @@ namespace remus {
 				void updateAttenuationConstant(size_t index, GLfloat attentuationConstant);
 				void updateAttenuationLinear(size_t index, GLfloat attentuationLinear);
 				void updateAttenuationQuadratic(size_t index, GLfloat attentuationQuadratic);
+				void updateActive(size_t index, bool active);
 
 			private:
 				const size_t SIZE = 48;
@@ -39,6 +42,8 @@ namespace remus {
 				const size_t ATTENUATION_LINEAR_SIZE = 4;
 				const size_t ATTENUATION_QUADRATIC_OFFSET = 40;
 				const size_t ATTENUATION_QUADRATIC_SIZE = 4;
+				const size_t ACTIVE_OFFSET = 44;
+				const size_t ACTIVE_SIZE = 4;
 
 			};
 

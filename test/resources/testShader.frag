@@ -13,11 +13,15 @@ struct PointLight {
 	float AttenuationConstant;
 	float AttenuationLinear;
 	float AttenuationQuadratic;
+
+	bool Active;
 };
 
 struct DirectionalLight {
 	vec4 Direction;
 	vec4 Color;
+
+	bool Active;
 };
 
 struct SpotLight {
@@ -31,6 +35,8 @@ struct SpotLight {
 	float AttenuationConstant;
 	float AttenuationLinear;
 	float AttenuationQuadratic;
+
+	bool Active;
 };
 
 layout(std430, binding = 0) buffer PointLights
@@ -88,6 +94,9 @@ void main() {
 }
 
 vec3 CalcPointLight(PointLight light, vec3 normal, vec3 viewDir) {
+	if(!light.Active)
+		return vec3(0, 0, 0);
+
 	vec3 lightPosition = vec3(light.Position);
 	vec3 lightColor = vec3(light.Color);
 	float lightColorAlpha = light.Color.a;
@@ -110,6 +119,9 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 viewDir) {
 }
 
 vec3 CalcDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDir) {
+	if(!light.Active)
+		return vec3(0, 0, 0);
+
 	vec3 lightDirection = vec3(light.Direction);
 	vec3 lightColor = vec3(light.Color);
 	float lightColorAlpha = light.Color.a;
@@ -126,6 +138,9 @@ vec3 CalcDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDir) {
 }
 
 vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 viewDir) {
+	if(!light.Active)
+		return vec3(0, 0, 0);
+
 	vec3 lightPosition = vec3(light.Position);
 	vec3 lightDirection = vec3(light.Direction);
 	vec3 lightColor = vec3(light.Color);

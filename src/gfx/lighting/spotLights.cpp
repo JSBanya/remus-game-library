@@ -14,6 +14,7 @@ namespace remus {
 				light.AttenuationConstant = attentuationConstant;
 				light.AttenuationLinear = attentuationLinear;
 				light.AttenuationQuadratic = attentuationQuadratic;
+				light.Active = true;
 				return this->add(light);
 			}
 
@@ -27,6 +28,7 @@ namespace remus {
 				this->updateAttenuationConstant(index, sl->AttenuationConstant);
 				this->updateAttenuationLinear(index, sl->AttenuationLinear);
 				this->updateAttenuationQuadratic(index, sl->AttenuationQuadratic);
+				this->updateActive(index, sl->Active);
 			}
 
 			void SpotLights::updatePosition(size_t index, glm::vec4 position) {
@@ -92,6 +94,14 @@ namespace remus {
 				sl->AttenuationQuadratic = attentuationQuadratic;
 				this->ssbo.bind();
 				this->ssbo.updateBufferData(&sl->AttenuationQuadratic, this->ATTENUATION_QUADRATIC_SIZE, this->ATTENUATION_QUADRATIC_OFFSET + this->SIZE * index);	
+				this->ssbo.unbind();
+			}
+
+			void SpotLights::updateActive(size_t index, bool active) {
+				auto sl = this->get(index);
+				sl->Active = active;
+				this->ssbo.bind();
+				this->ssbo.updateBufferData(&sl->Active, this->ACTIVE_SIZE, this->ACTIVE_OFFSET + this->SIZE * index);	
 				this->ssbo.unbind();
 			}
 		}

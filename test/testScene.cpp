@@ -40,7 +40,7 @@ void TestScene::setup() {
 
 	// Lighting
 	this->ambient = glm::vec3(0.05f, 0.05f, 0.05f);
-	this->pointLights.newLight(glm::vec4(0.0f, 2.0f, 0.0f, 1.0), glm::vec4(0.0f, 0.0f, 0.0f, 1.0), 1.0f, 0.07, 0.017);
+	this->pointLights.newLight(glm::vec4(3.0f, 3.0f, 0.0f, 1.0), glm::vec4(0.0f, 0.0f, 0.0f, 1.0), 1.0f, 0.07, 0.017);
 	this->spotLights.newLight(
 		glm::vec4(-1.0f, 1.0f, 0.0f, 1.0f), 
 		glm::vec4(1.0f, -0.25f, 0.0f, 1.0f), 
@@ -93,6 +93,12 @@ void TestScene::render(GLfloat time, GLfloat delta) {
 
 	if(this->keyboard->isPressed(GLFW_KEY_S)) {
 		this->activeCamera->addPosZ(-1.0f * this->movementSpeed * delta);
+	}
+
+	if(this->keyboard->isPressed(GLFW_KEY_F) && time - this->lastSpotlightToggle >= 0.25f) {
+		remus::logger::logNotice("Toggling spotlight");
+		this->spotLights.updateActive(0, !this->spotLights.get(0)->Active);
+		this->lastSpotlightToggle = time;
 	}
 
 	// Handle mouse inputs

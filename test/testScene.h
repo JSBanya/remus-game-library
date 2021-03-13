@@ -32,6 +32,8 @@ private:
 	float sensitivity = 90.0f;
 	float movementSpeed = 3.0f;
 
+	float lastSpotlightToggle = 0;
+
 	float pointLightColorClock = 0.0f;
 	float pointLightPositionClock = 0.0f;
 

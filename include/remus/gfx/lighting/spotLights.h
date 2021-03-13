@@ -2,8 +2,6 @@
 
 #include <remus/gfx/lighting/lights.h>
 
-#include <remus/logging/logger.h>
-
 namespace remus {
 	namespace gfx {
 		namespace lighting {
@@ -19,6 +17,8 @@ namespace remus {
 				GLfloat AttenuationConstant;
 				GLfloat AttenuationLinear;
 				GLfloat AttenuationQuadratic;
+
+				GLint Active;
 			};
 
 			class SpotLights : public Lights<SpotLight> {
@@ -36,6 +36,7 @@ namespace remus {
 				void updateAttenuationConstant(size_t index, GLfloat attentuationConstant);
 				void updateAttenuationLinear(size_t index, GLfloat attentuationLinear);
 				void updateAttenuationQuadratic(size_t index, GLfloat attentuationQuadratic);
+				void updateActive(size_t index, bool active);
 
 			protected:
 				const size_t SIZE = 80;
@@ -55,6 +56,8 @@ namespace remus {
 				const size_t ATTENUATION_LINEAR_SIZE = 4;
 				const size_t ATTENUATION_QUADRATIC_OFFSET = 64;
 				const size_t ATTENUATION_QUADRATIC_SIZE = 4;
+				const size_t ACTIVE_OFFSET = 68;
+				const size_t ACTIVE_SIZE = 4;
 			};
 
 		}
