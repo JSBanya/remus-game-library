@@ -29,13 +29,15 @@ namespace remus {
 					shader->setUniform("viewMatrix", this->getCamera()->getViewMatrix());
 					shader->setUniform("projectionMatrix", this->getCamera()->getProjection());
 					shader->setUniform("normalMatrix", modelMatrix.getNormalMatrix());
+					shader->setUniform("cameraPosition", this->getCamera()->getPos());
 
 					// Apply entity uniforms
 					e->applyUniforms();
 
 					// Apply lights
 					shader->setUniform("ambient", this->ambient);
-					this->lights.bind();
+					this->pointLights.bind(0);
+					this->directionaLights.bind(1);
 
 					// Draw model mesh-by-mesh
 					auto model = e->getModel();

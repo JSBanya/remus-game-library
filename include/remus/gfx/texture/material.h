@@ -14,8 +14,7 @@ namespace remus {
 
 			class Material {
 			public:
-				Material(Texture2D* diffuse = nullptr, Texture2D* specular = nullptr, GLfloat shininess = 1.0)
-					: diffuse(diffuse), specular(specular), shininess(shininess) {};
+				Material(Texture2D* diffuse = nullptr, Texture2D* specular = nullptr, GLfloat shininess = 1.0);
 
 				Material* setDiffuse(Texture2D* diffuse) noexcept;
 				Material* setSpecular(Texture2D* specular) noexcept;
@@ -23,11 +22,17 @@ namespace remus {
 
 				void bind(shaders::ShaderProgram* shader);
 				void unbind();
-	
+
+				~Material();
 			private:
 				Texture2D* diffuse;
 				Texture2D* specular;
 				GLfloat shininess = 1.0;
+			
+			private:
+				static inline int MATERIAL_COUNT = 0;
+				static inline Texture2D* DEFAULT_DIFFUSE = nullptr;
+				static inline Texture2D* DEFAULT_SPECULAR = nullptr;
 			};
 
 		}

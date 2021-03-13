@@ -23,6 +23,7 @@ namespace remus {
 					glBindTexture(GL_TEXTURE_2D, 0);
 				}
 
+				void genColor(GLint width, GLint height, GLfloat r, GLfloat g, GLfloat b, GLfloat a);
 				void genTexture(GLenum format, GLint width, GLint height, const void* data);
 				void load(std::string filePath, bool genMipmaps = true);
 

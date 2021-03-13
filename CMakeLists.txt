@@ -39,7 +39,9 @@ add_library(remus STATIC
 	src/gfx/buffers/vbo.cpp
 	src/gfx/buffers/ssbo.cpp
 
-	src/gfx/lighting/lights.cpp
+	src/gfx/lighting/pointLights.cpp
+	src/gfx/lighting/directionalLights.cpp
+	src/gfx/lighting/spotLights.cpp
 
 	src/gfx/models/model.cpp
 	src/gfx/models/mesh.cpp

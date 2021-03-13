@@ -11,6 +11,27 @@ namespace remus {
 				glGenTextures(1, &this->ID); 
 			};
 
+			void Texture2D::genColor(GLint width, GLint height, GLfloat r, GLfloat g, GLfloat b, GLfloat a) {
+				std::vector<GLfloat> data(4 * width * height);
+				for(auto i = 0; i < data.size(); i += 4) {
+					data[i] = r;
+					data[i+1] = g;
+					data[i+2] = b;
+					data[i+3] = a;
+				}
+
+				this->width = width;
+				this->height = height;
+
+				this->bind();
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_FLOAT, &data[0]);
+				this->unbind();
+			}
+
 			void Texture2D::genTexture(GLenum format, GLint width, GLint height, const void * data) {
 				this->width = width;
 				this->height = height;

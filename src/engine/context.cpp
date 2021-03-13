@@ -283,6 +283,17 @@ namespace remus {
 			return this;
 		}
 
+		Context* Context::loadTexture2D(std::string name, gfx::texture::Texture2D* tex) {
+			logger::logNotice("Creating texture2D \"" + name + "\" from preload.");
+			if(this->texture2D.count(name) > 0) {
+				logger::logWarning("Texture2D already exists with name \"" + name + "\"");
+			}
+
+			this->texture2D[name] = tex;
+			logger::logNotice("Created texture2D \"" + name + "\" from preload.");
+			return this;
+		}
+
 		gfx::texture::Texture2D* Context::getTexture2D(std::string name) {
 			if(this->texture2D.count(name) == 0) 
 				throw std::runtime_error("No texture with name \"" + name + "\"");

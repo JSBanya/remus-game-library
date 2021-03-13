@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdlib>
+#include <time.h>
 #include <remus/logging/logger.h>
 #include <remus/engine/window.h>
 #include <remus/engine/runtime.h>

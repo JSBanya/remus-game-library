@@ -53,6 +53,7 @@ namespace remus {
 
 			// Texture
 			Context* loadTexture2D(std::string name, std::string path, bool genMipmaps = true);
+			Context* loadTexture2D(std::string name, gfx::texture::Texture2D* tex);
 			gfx::texture::Texture2D* getTexture2D(std::string name);
 
 			// Material

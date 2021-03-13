@@ -12,7 +12,8 @@
 #include <remus/engine/entity/entity.h>
 #include <remus/utils/mouse.h>
 #include <remus/engine/context.h>
-#include <remus/gfx/lighting/lights.h>
+#include <remus/gfx/lighting/pointLights.h>
+#include <remus/gfx/lighting/directionalLights.h>
 
 namespace remus {
 	namespace engine {
@@ -46,7 +47,8 @@ namespace remus {
 				gfx::view::Camera* activeCamera;
 				Context* context;
 
-				gfx::lighting::Lights lights;
+				gfx::lighting::PointLights pointLights;
+				gfx::lighting::DirectionalLights directionaLights;
 				glm::vec3 ambient = glm::vec3(1.0);
 
 				std::vector<gfx::entity::Entity*> entities;
