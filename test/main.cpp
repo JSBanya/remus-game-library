@@ -50,5 +50,5 @@ void loadResources(remus::engine::Context* context) {
 	context->loadModel("cube", "./resources/cube.glb", false, true);
 	context->loadTexture2D("cube_texture", "./resources/CubeTexture.png", true);
 	context->loadTexture2D("cube_specular", "./resources/CubeSpecular.png", false);
-	context->createMaterial("cube_material", "cube_texture", "cube_specular", 16.0);
+	context->createMaterial("cube_material", "cube_texture", "cube_specular", 8.0);
 }

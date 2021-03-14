@@ -111,8 +111,8 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 viewDir) {
 	vec3 diffuse = attenuation * lightColor * lightColorAlpha * diff * vec3(texture(material.diffuse, TexCoords));
 
 	// Specular
-	vec3 reflectDir = reflect(-lightDir, normal);
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+	vec3 halfwayDir = normalize(viewDir + lightDir);
+    float spec = pow(max(dot(normal, halfwayDir), 0.0), material.shininess);
 	vec3 specular = attenuation * lightColor * lightColorAlpha * spec * vec3(texture(material.specular, TexCoords));
 
     return (diffuse + specular);
@@ -126,11 +126,13 @@ vec3 CalcDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDir) {
 	vec3 lightColor = vec3(light.Color);
 	float lightColorAlpha = light.Color.a;
 
+	// Diffuse
 	vec3 lightDir = normalize(-lightDirection);
     float diff = max(dot(normal, lightDir), 0.0);
 
-    vec3 reflectDir = reflect(-lightDir, normal);
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+	// Specular
+    vec3 halfwayDir = normalize(viewDir + lightDir);
+    float spec = pow(max(dot(normal, halfwayDir), 0.0), material.shininess);
     
     vec3 diffuse = lightColor * lightColorAlpha * diff * vec3(texture(material.diffuse, TexCoords));
     vec3 specular = lightColor * lightColorAlpha * spec * vec3(texture(material.specular, TexCoords));
@@ -161,8 +163,8 @@ vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 viewDir) {
 	vec3 diffuse = attenuation * intensity * lightColor * lightColorAlpha * diff * vec3(texture(material.diffuse, TexCoords));
 
 	// Specular
-    vec3 reflectDir = reflect(-lightDir, normal);
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+    vec3 halfwayDir = normalize(viewDir + lightDir);
+    float spec = pow(max(dot(normal, halfwayDir), 0.0), material.shininess);
     vec3 specular = attenuation * intensity * lightColor * lightColorAlpha * spec * vec3(texture(material.specular, TexCoords));
 
     return (diffuse + specular);
