@@ -39,17 +39,17 @@ struct SpotLight {
 	bool Active;
 };
 
-layout(std430, binding = 0) buffer PointLights
+layout(std430, binding = 1) buffer PointLights
 {
     PointLight lights[];
 } pointLights;
 
-layout(std430, binding = 1) buffer DirectionalLights
+layout(std430, binding = 2) buffer DirectionalLights
 {
     DirectionalLight lights[];
 } directionalLights;
 
-layout(std430, binding = 2) buffer SpotLights
+layout(std430, binding = 3) buffer SpotLights
 {
     SpotLight lights[];
 } spotLights;

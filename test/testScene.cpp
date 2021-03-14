@@ -11,20 +11,25 @@ TestScene::TestScene(remus::engine::Context* context, remus::gfx::view::Camera* 
 
 void TestScene::setup() {
 	// Floor
-	const int X_MIN = -20;
-	const int X_MAX = 20;
-	const int Z_MIN = -20;
-	const int Z_MAX = 20;
-	for(auto x = X_MIN; x < X_MAX; x+=2) {
-		for(auto z = Z_MIN; z < Z_MAX; z+=2) {
-			auto floorEntity = new remus::gfx::entity::Entity(
-				context->getModel("floor"),
-				context->getShaderProgram("test_shader"),
-				{context->getMaterial("floor_material")},
-				{"Plane"}
-			);
-			this->addEntity(floorEntity);
-			floorEntity->getModelMatrix().setPos(x, 0.0f, z);
+	const int X_MIN = -50;
+	const int X_MAX = 50;
+	const int Z_MIN = -50;
+	const int Z_MAX = 50;
+
+	auto floorEntity = new remus::gfx::entity::Entity(
+		context->getModel("floor"),
+		context->getShaderProgram("test_shader"),
+		{context->getMaterial("floor_material")},
+		{"Plane"}
+	);
+	this->addEntity(floorEntity);
+	floorEntity->removeInstance(0); // Remove the default instance to make looping simpler
+
+	for(auto x = X_MIN; x < X_MAX; x++) {
+		for(auto z = Z_MIN; z < Z_MAX; z++) {
+			auto modelMatrix = floorEntity->newInstance();
+			modelMatrix->setPos(x, 0.0f, z);
+			modelMatrix->setScale(0.5f, 1.0f, 0.5f);
 		}
 	}
 
@@ -36,7 +41,7 @@ void TestScene::setup() {
 							{"Cube"}
 						);
 	this->addEntity(this->cubeEntity);
-	this->cubeEntity->getModelMatrix().setPos(3.0f, 1.0f, 0.0f);
+	this->cubeEntity->getModelMatrix()->setPos(3.0f, 1.0f, 0.0f);
 
 	// Lighting
 	this->ambient = glm::vec3(0.05f, 0.05f, 0.05f);
@@ -58,7 +63,8 @@ void TestScene::setup() {
 }
 
 void TestScene::tick(GLint num) {
-	this->cubeEntity->getModelMatrix().rotateY(1.5f);
+	this->cubeEntity->getModelMatrix()->rotateY(1.5f);
+	this->cubeEntity->updateInstance();
 }
 
 void TestScene::render(GLfloat time, GLfloat delta) {

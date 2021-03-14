@@ -56,6 +56,12 @@ namespace remus {
 					this->vao->unbind();
 				}
 
+				inline void drawTrianglesInstanced(GLint instances) noexcept {
+					this->vao->bind();
+					glDrawElementsInstanced(GL_TRIANGLES, this->ebo->getNumIndices(), GL_UNSIGNED_INT, 0, instances);
+					this->vao->unbind();
+				}
+
 				virtual ~Mesh();
 
 			private:

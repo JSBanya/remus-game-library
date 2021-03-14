@@ -20,15 +20,19 @@ namespace remus {
 
 			void Scene::draw() {
 				for(auto &e : this->entities) {
+					if(e->numInstances() == 0)
+						continue;
+					
 					auto shader = e->getShader();
-					auto modelMatrix = e->getModelMatrix();
 
 					shader->bind();
 
-					shader->setUniform("modelMatrix", modelMatrix.get());
+					// Bind entity instances
+					e->bindInstanceData(0);
+
+					// Bind camera uniforms
 					shader->setUniform("viewMatrix", this->getCamera()->getViewMatrix());
 					shader->setUniform("projectionMatrix", this->getCamera()->getProjection());
-					shader->setUniform("normalMatrix", modelMatrix.getNormalMatrix());
 					shader->setUniform("cameraPosition", this->getCamera()->getPos());
 
 					// Apply entity uniforms
@@ -36,9 +40,9 @@ namespace remus {
 
 					// Apply lights
 					shader->setUniform("ambient", this->ambient);
-					this->pointLights.bind(0);
-					this->directionaLights.bind(1);
-					this->spotLights.bind(2);
+					this->pointLights.bind(1);
+					this->directionaLights.bind(2);
+					this->spotLights.bind(3);
 
 					// Draw model mesh-by-mesh
 					auto model = e->getModel();
@@ -52,7 +56,7 @@ namespace remus {
 							materials[meshName]->bind(shader);
 						}
 						
-						meshObj->drawTriangles();
+						meshObj->drawTrianglesInstanced(e->numInstances());
 
 						if(hasMaterial) {
 							materials[meshName]->unbind();

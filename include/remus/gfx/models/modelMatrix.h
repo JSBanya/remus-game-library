@@ -175,9 +175,9 @@ namespace remus {
 					return this->scale(glm::vec3(x, y, z));
 				}
 
-				inline glm::mat3 getNormalMatrix() noexcept {
+				inline glm::mat4 getNormalMatrix() noexcept {
 					if(this->recalcNormalMatrix) {
-						this->normalMatrix = glm::mat3(glm::transpose(glm::inverse(this->get())));
+						this->normalMatrix = glm::transpose(glm::inverse(this->get()));
 						this->recalcNormalMatrix = false;
 					}
 					return this->normalMatrix;
@@ -190,7 +190,7 @@ namespace remus {
 				glm::mat4 rotation;
 				glm::vec3 size;
 				glm::mat4 modelMatrix;
-				glm::mat3 normalMatrix;
+				glm::mat4 normalMatrix;
 				ModelMode modelMode = WORLD;
 			};
 
