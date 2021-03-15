@@ -4,8 +4,8 @@ namespace remus {
 	namespace engine {
 		namespace scene {
 
-			Driver::Driver(Context* context) {
-				this->context = context;
+			Driver::Driver(Cache* cache) {
+				this->cache = cache;
 			}
 
 			void Driver::addScene(scene::Scene* s) noexcept {
@@ -22,7 +22,7 @@ namespace remus {
 
 			void Driver::tick(GLint num) {
 				for(auto &s : this->activeScenes) {
-					s->setContext(this->context);
+					s->setCache(this->cache);
 					s->tick(num);
 				}
 			}
@@ -37,6 +37,10 @@ namespace remus {
 				for(auto &s : this->activeScenes) {
 					s->draw();
 				}
+			}
+
+			gfx::shaders::ShaderProgram* Driver::getPostProcessor() noexcept {
+				return this->cache->getShaderProgram("default_shader_postprocessing");
 			}
 
 			Driver::~Driver() {

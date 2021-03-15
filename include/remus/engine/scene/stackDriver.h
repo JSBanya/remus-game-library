@@ -2,7 +2,7 @@
 
 #include <stack>
 #include <vector>
-#include <remus/engine/context.h>
+#include <remus/engine/cache.h>
 #include <remus/engine/driver/driver.h>
 #include <remus/engine/scene/scene.h>
 

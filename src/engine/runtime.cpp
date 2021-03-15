@@ -4,7 +4,7 @@ namespace remus {
 	namespace engine {
 
 		Runtime::Runtime() {
-			this->context = new Context();
+			this->cache = new Cache();
 		}
 
 		Runtime::Runtime(Window* mainWindow) : Runtime() {
@@ -42,14 +42,15 @@ namespace remus {
 				}
 
 				// Perform renders
-				this->mainWindow->clear();
-
 				auto delta = currentTime - lastFrame;
 				lastFrame = currentTime;
 				driver->render(timeSinceStart, delta);
-				driver->draw();
 
-				this->mainWindow->update();
+				this->mainWindow->beginDraw();
+				driver->draw();
+				this->mainWindow->endDraw();
+				this->mainWindow->update(driver->getPostProcessor());
+
 				fps++;
 
 				if(timeSinceStart - lastSecond >= 1.0f) {
@@ -75,12 +76,12 @@ namespace remus {
 			return this;
 		}
 
-		Context* Runtime::getContext() noexcept {
-			return this->context;
+		Cache* Runtime::getCache() noexcept {
+			return this->cache;
 		}
 
 		Runtime::~Runtime() {
-			delete this->context;
+			delete this->cache;
 		}
 	}
 }

@@ -1,7 +1,7 @@
 #include "testScene.h"
 
-TestScene::TestScene(remus::engine::Context* context, remus::gfx::view::Camera* camera, remus::utils::Mouse* mouse, remus::utils::Keyboard* keyboard) 
-	: remus::engine::scene::Scene("Test Scene", camera, context) 
+TestScene::TestScene(remus::engine::Cache* cache, remus::gfx::view::Camera* camera, remus::utils::Mouse* mouse, remus::utils::Keyboard* keyboard) 
+	: remus::engine::scene::Scene("Test Scene", camera, cache) 
 {
 	this->mouse = mouse;
 	this->keyboard = keyboard;
@@ -17,9 +17,9 @@ void TestScene::setup() {
 	const int Z_MAX = 50;
 
 	auto floorEntity = new remus::gfx::entity::Entity(
-		context->getModel("floor"),
-		context->getShaderProgram("test_shader"),
-		{context->getMaterial("floor_material")},
+		cache->getModel("floor"),
+		cache->getShaderProgram("test_shader"),
+		{cache->getMaterial("floor_material")},
 		{"Plane"}
 	);
 	this->addEntity(floorEntity);
@@ -35,9 +35,9 @@ void TestScene::setup() {
 
 	// Cube
 	this->cubeEntity = new remus::gfx::entity::Entity(
-							context->getModel("cube"), 
-							context->getShaderProgram("test_shader"), 
-							{context->getMaterial("cube_material")}, 
+							cache->getModel("cube"), 
+							cache->getShaderProgram("test_shader"), 
+							{cache->getMaterial("cube_material")}, 
 							{"Cube"}
 						);
 	this->addEntity(this->cubeEntity);

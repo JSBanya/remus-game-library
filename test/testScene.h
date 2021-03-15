@@ -4,7 +4,7 @@
 #include <math.h>
 #include <string>
 #include <remus/engine/scene/scene.h>
-#include <remus/engine/context.h>
+#include <remus/engine/cache.h>
 #include <remus/gfx/view/camera.h>
 #include <remus/utils/mouse.h>
 #include <remus/utils/keyboard.h>
@@ -12,7 +12,7 @@
 
 class TestScene : public remus::engine::scene::Scene {
 public:
-	TestScene(remus::engine::Context* context, remus::gfx::view::Camera* camera, remus::utils::Mouse* mouse, remus::utils::Keyboard* keyboard);
+	TestScene(remus::engine::Cache* cache, remus::gfx::view::Camera* camera, remus::utils::Mouse* mouse, remus::utils::Keyboard* keyboard);
 
 	void setup();
 

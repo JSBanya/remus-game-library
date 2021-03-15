@@ -31,18 +31,18 @@ namespace remus {
 					eWidth, eHeight, 0.0f,  // top right
 					1.0f, 1.0f, 	// top right texture
 					
-					eWidth, -eHeight, 0.0f,  // bottom right
-					1.0f, 0.0f,	 // bottom right texture
-
 					-eWidth, -eHeight, 0.0f,  // bottom left
 					0.0f, 0.0f, 	// bottom left texture
+
+					eWidth, -eHeight, 0.0f,  // bottom right
+					1.0f, 0.0f,	 // bottom right texture
 
 					-eWidth, eHeight, 0.0f,   // top left 
 					0.0f, 1.0f		// top left texture
 				};
 				std::vector<GLuint> indices = {
-					0, 1, 3,   // first triangle
-					1, 2, 3    // second triangle
+					0, 1, 2,   // first triangle
+					0, 3, 1    // second triangle
 				};
 
 				this->mesh = new Mesh();

@@ -3,10 +3,10 @@
 namespace remus {
 	namespace engine {
 		namespace scene {
-			Scene::Scene(std::string name, gfx::view::Camera* c, Context* context) {
+			Scene::Scene(std::string name, gfx::view::Camera* c, Cache* cache) {
 				this->name = name;
 				this->activeCamera = c;
-				this->context = context;
+				this->cache = cache;
 				logger::logNotice("Created new scene with name \"" + name + "\".");
 			}
 

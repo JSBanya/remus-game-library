@@ -16,8 +16,7 @@ find_package(assimp REQUIRED)
 add_library(remus STATIC
 	src/engine/runtime.cpp
 	src/engine/window.cpp
-	src/engine/context.cpp
-	src/engine/context_defaults.cpp
+	src/engine/cache.cpp
 
 	src/engine/scene/driver.cpp
 	src/engine/scene/stackDriver.cpp
@@ -25,6 +24,7 @@ add_library(remus STATIC
 
 	src/utils/mouse.cpp
 	src/utils/keyboard.cpp
+	src/utils/screen.cpp
 
 	src/gfx/entity/entity.cpp
 

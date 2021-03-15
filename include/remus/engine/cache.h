@@ -25,47 +25,47 @@
 namespace remus {
 	namespace engine {
 
-		class Context {
+		class Cache {
 		public:
-			Context(bool withDefaults = false);
+			Cache();
 
 			// Shaders
-			Context* loadShader(std::string name, gfx::shaders::Shader* shader);
-			Context* loadShader(std::string name, std::string pathToFile, std::string shaderType);
-			Context* loadShaderVertex(std::string name, std::string path);
-			Context* loadShaderFragment(std::string name, std::string path);
+			Cache* loadShader(std::string name, gfx::shaders::Shader* shader);
+			Cache* loadShader(std::string name, std::string pathToFile, std::string shaderType);
+			Cache* loadShaderVertex(std::string name, std::string path);
+			Cache* loadShaderFragment(std::string name, std::string path);
 			gfx::shaders::Shader* getShader(std::string name);
 
-			Context* loadShaderProgram(std::string name, std::vector<std::string> s);
+			Cache* loadShaderProgram(std::string name, std::vector<std::string> s);
 			gfx::shaders::ShaderProgram* getShaderProgram(std::string name);
 
 			// Mesh
-			Context* loadMeshes(std::string prefix, std::string path, bool genOBB = true);
-			Context* loadMesh(std::string, gfx::models::Mesh*);
+			Cache* loadMeshes(std::string prefix, std::string path, bool genOBB = true);
+			Cache* loadMesh(std::string, gfx::models::Mesh*);
 
 			gfx::models::Mesh* getMesh(std::string name);
 
 			// Model
-			Context* loadModel(std::string name, std::string path, bool addMeshesToContext = true, bool genOBB = true);
-			Context* loadModel(std::string name, gfx::models::Model*);
-			Context* loadModel(std::string name, std::vector<std::string> meshNames);
+			Cache* loadModel(std::string name, std::string path, bool addMeshesToCache = true, bool genOBB = true);
+			Cache* loadModel(std::string name, gfx::models::Model*);
+			Cache* loadModel(std::string name, std::vector<std::string> meshNames);
 			gfx::models::Model* getModel(std::string name);
 
 			// Texture
-			Context* loadTexture2D(std::string name, std::string path, bool genMipmaps = true);
-			Context* loadTexture2D(std::string name, gfx::texture::Texture2D* tex);
+			Cache* loadTexture2D(std::string name, std::string path, bool genMipmaps = true);
+			Cache* loadTexture2D(std::string name, gfx::texture::Texture2D* tex);
 			gfx::texture::Texture2D* getTexture2D(std::string name);
 
 			// Material
-			Context* loadMaterial(std::string name, gfx::texture::Material* material);
-			Context* createMaterial(std::string name, std::string diffuse = "", std::string specular = "", GLfloat shininess = 1.0);
+			Cache* loadMaterial(std::string name, gfx::texture::Material* material);
+			Cache* createMaterial(std::string name, std::string diffuse = "", std::string specular = "", GLfloat shininess = 1.0);
 			gfx::texture::Material* getMaterial(std::string name);
 
 			// Font
-			Context* loadFont(std::string name, std::string path, GLint size);
+			Cache* loadFont(std::string name, std::string path, GLint size);
 			gfx::texture::Font* getFont(std::string name);
 		
-			~Context();
+			~Cache();
 
 		private:
 			std::string readContentsString(std::string pathToFile);

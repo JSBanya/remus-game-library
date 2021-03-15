@@ -5,7 +5,8 @@
 #include <remus/engine/window.h>
 #include <remus/logging/logger.h>
 #include <remus/engine/scene/driver.h>
-#include <remus/engine/context.h>
+#include <remus/engine/cache.h>
+#include <remus/gfx/texture/writableTexture2d.h>
 
 namespace remus {
 	namespace engine {
@@ -20,14 +21,14 @@ namespace remus {
 			Runtime* setMainWindow(Window* win) noexcept;
 			Runtime* setTPS(GLint tps) noexcept;
 
-			Context* getContext() noexcept;
+			Cache* getCache() noexcept;
 
 			virtual ~Runtime();
 
 		protected:
 			Window* mainWindow = NULL;
 			GLint TPS = 30;
-			Context* context;
+			Cache* cache;
 		};
 
 	}

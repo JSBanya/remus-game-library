@@ -1,29 +1,89 @@
-#include <remus/engine/context.h>
+#include <remus/engine/cache.h>
 
 namespace remus {
 	namespace engine {
 
-		Context::Context(bool withDefaults) {
-			if(withDefaults)
-				logger::logNotice("Creating new context with defaults...");
-			else
-				logger::logNotice("Creating new context...");
+		Cache::Cache() {
+			logger::logNotice("Creating new cache...");
+			this->loadDefaults();
+			logger::logNotice("Created new cache.");
+		}
 
-			if(withDefaults) {
-				this->loadDefaults();
+		void Cache::loadDefaults() {
+			logger::logNotice("Loading cache defaults...");
+
+			// default_vertex_shader_postprocessing
+			const std::string default_vertex_shader_postprocessing_source = 
+			R"(
+			#version 430 core
+			layout (location = 0) in vec3 aPos;
+			layout (location = 1) in vec2 texPos;
+
+			out vec2 TexCoords;
+
+			void main() {
+				gl_Position = vec4(aPos.x, aPos.y, 0.0, 1.0); 
+				TexCoords = texPos;
 			}
+			)";
+			this->loadShader("default_vertex_shader_postprocessing",  new gfx::shaders::Shader(default_vertex_shader_postprocessing_source, GL_VERTEX_SHADER));
 
-			if(withDefaults)
-				logger::logNotice("Created new context with defaults.");
-			else
-				logger::logNotice("Created new context.");
+			// default_fragment_shader_postprocessing
+			const std::string default_fragment_shader_postprocessing_source = 
+			R"(
+			#version 430 core
 
+			in vec2 TexCoords;
+			out vec4 FragColor;
+
+			uniform sampler2D screen;
+
+			void main() {
+				FragColor = texture(screen, TexCoords);
+			}
+			)";
+
+		 	this->loadShader("default_fragment_shader_postprocessing", new gfx::shaders::Shader(default_fragment_shader_postprocessing_source, GL_FRAGMENT_SHADER));
+
+			// default_shader
+			this->loadShaderProgram("default_shader_postprocessing", {"default_vertex_shader_postprocessing", "default_fragment_shader_postprocessing"});
+
+			// default_vertex_shader_text_generation
+			const std::string default_vertex_shader_text_generation_source = 
+			R"(
+				#version 330 core
+				layout (location = 0) in vec3 aPos;
+				layout (location = 1) in vec2 texPos;
+				uniform mat4 modelMatrix;
+				out vec2 texCoord;
+				void main() {
+					gl_Position = modelMatrix * vec4(aPos, 1.0);
+					texCoord = texPos;
+				}
+			)";
+			this->loadShader("default_vertex_shader_text_generation", new gfx::shaders::Shader(default_vertex_shader_text_generation_source, GL_VERTEX_SHADER));
+
+			// default_fragment_shader_text_generation
+			const std::string default_fragment_shader_text_generation_source = 
+			R"(
+			#version 330 core
+			in vec2 texCoord;
+			out vec4 FragColor;
+			uniform sampler2D character;
+			void main() {
+				FragColor = texture(character, texCoord);
+			}
+			)";
+			this->loadShader("default_fragment_shader_text_generation", new gfx::shaders::Shader(default_fragment_shader_text_generation_source, GL_FRAGMENT_SHADER));
+
+			// default_shader_text_generation
+			this->loadShaderProgram("default_shader_text_generation", {"default_vertex_shader_text_generation", "default_fragment_shader_text_generation"});
 		}
 
 		/****************
 		* Shader
 		****************/
-		Context* Context::loadShader(std::string name, gfx::shaders::Shader* shader) {
+		Cache* Cache::loadShader(std::string name, gfx::shaders::Shader* shader) {
 			logger::logNotice("Loading shader with name \"" + name + "\"");
 
 			if(this->shaders.count(name) > 0) {
@@ -35,7 +95,7 @@ namespace remus {
 			return this;
 		}
 
-		Context* Context::loadShader(std::string name, std::string pathToFile, std::string shaderType) {
+		Cache* Cache::loadShader(std::string name, std::string pathToFile, std::string shaderType) {
 			GLenum st = 0;
 			if(shaderType == "vertex") {
 				st = GL_VERTEX_SHADER;
@@ -53,15 +113,15 @@ namespace remus {
 			return this;
 		}
 
-		Context* Context::loadShaderVertex(std::string name, std::string path) {
+		Cache* Cache::loadShaderVertex(std::string name, std::string path) {
 			return this->loadShader(name, path, "vertex");
 		}
 
-		Context* Context::loadShaderFragment(std::string name, std::string path) {
+		Cache* Cache::loadShaderFragment(std::string name, std::string path) {
 			return this->loadShader(name, path, "fragment");
 		}
 
-		gfx::shaders::Shader* Context::getShader(std::string name) {
+		gfx::shaders::Shader* Cache::getShader(std::string name) {
 			if(this->shaders.count(name) == 0) 
 				throw std::runtime_error("No shader with name \"" + name + "\"");
 			return this->shaders[name];
@@ -71,7 +131,7 @@ namespace remus {
 		/****************
 		* Shader Program
 		****************/
-		Context* Context::loadShaderProgram(std::string programName, std::vector<std::string> shaderNames) {
+		Cache* Cache::loadShaderProgram(std::string programName, std::vector<std::string> shaderNames) {
 			std::string names = "";
 			for(auto sn : shaderNames) {
 				names += sn + ",";
@@ -92,7 +152,7 @@ namespace remus {
 			return this;
 		}
 
-		gfx::shaders::ShaderProgram* Context::getShaderProgram(std::string name) {
+		gfx::shaders::ShaderProgram* Cache::getShaderProgram(std::string name) {
 			if(this->shaderPrograms.count(name) == 0) 
 				throw std::runtime_error("No shader program with name \"" + name + "\"");
 			return this->shaderPrograms[name];
@@ -102,7 +162,7 @@ namespace remus {
 		/****************
 		* Mesh
 		****************/
-		Context* Context::loadMeshes(std::string prefix, std::string path, bool genOBB) {
+		Cache* Cache::loadMeshes(std::string prefix, std::string path, bool genOBB) {
 			logger::logNotice("Loading meshes from file \"" + path + "\" with prefix \"" + prefix + "\"");
 
 			auto meshes = this->getMeshesFromFile(path, genOBB);
@@ -114,7 +174,7 @@ namespace remus {
 			return this;
 		}
 
-		std::unordered_map<std::string, gfx::models::Mesh*> Context::getMeshesFromFile(std::string path, bool genOBB) {
+		std::unordered_map<std::string, gfx::models::Mesh*> Cache::getMeshesFromFile(std::string path, bool genOBB) {
 			std::filesystem::path p(path);
 			if(!std::filesystem::exists(p)) {
 				throw std::runtime_error("File " + path + " does not exist.");
@@ -129,7 +189,7 @@ namespace remus {
 			return this->createMeshes(scene->mRootNode, scene, genOBB);
 		}
 
-		std::unordered_map<std::string, gfx::models::Mesh*> Context::createMeshes(aiNode *node, const aiScene *scene, bool genOBB) {
+		std::unordered_map<std::string, gfx::models::Mesh*> Cache::createMeshes(aiNode *node, const aiScene *scene, bool genOBB) {
 			std::unordered_map<std::string, gfx::models::Mesh*> meshes;
 
 			for(unsigned int i = 0; i < node->mNumMeshes; i++) {
@@ -148,7 +208,7 @@ namespace remus {
 			return meshes;
 		}
 
-		std::unordered_map<std::string, gfx::models::Mesh*> Context::createMesh(aiMesh *mesh, const aiScene *scene, bool genOBB) {
+		std::unordered_map<std::string, gfx::models::Mesh*> Cache::createMesh(aiMesh *mesh, const aiScene *scene, bool genOBB) {
 			std::vector<gfx::models::Vertex> vertices;
 			std::vector<GLuint> indices;
 
@@ -191,7 +251,7 @@ namespace remus {
 			return meshes;
 		}
 
-		Context* Context::loadMesh(std::string name, gfx::models::Mesh* m) {
+		Cache* Cache::loadMesh(std::string name, gfx::models::Mesh* m) {
 			logger::logNotice("Creating mesh \"" + name + "\"");
 			if(this->meshes.count(name) > 0)
 				logger::logWarning("Mesh already exists with name \"" + name + "\"");
@@ -202,7 +262,7 @@ namespace remus {
 			return this;
 		}
 
-		gfx::models::Mesh* Context::getMesh(std::string name) {
+		gfx::models::Mesh* Cache::getMesh(std::string name) {
 			if(this->meshes.count(name) == 0) 
 				throw std::runtime_error("No mesh with name \"" + name + "\"");
 			return this->meshes[name];
@@ -212,7 +272,7 @@ namespace remus {
 		/****************
 		* Model
 		****************/
-		Context* Context::loadModel(std::string name, std::string path, bool addMeshesToContext, bool genOBB) {
+		Cache* Cache::loadModel(std::string name, std::string path, bool addMeshesToCache, bool genOBB) {
 			logger::logNotice("Loading model \"" + name + "\" from file \"" + path + "\"");
 
 			auto meshes = this->getMeshesFromFile(path, genOBB);
@@ -220,7 +280,7 @@ namespace remus {
 			std::string meshNames = "";
 			for(auto &it : meshes) {
 				meshNames += it.first + ", ";
-				if(addMeshesToContext) {
+				if(addMeshesToCache) {
 					this->loadMesh(name + "_" + it.first, it.second);
 				}
 			}
@@ -231,7 +291,7 @@ namespace remus {
 			return this;
 		}
 
-		Context* Context::loadModel(std::string name, gfx::models::Model* model) {
+		Cache* Cache::loadModel(std::string name, gfx::models::Model* model) {
 			logger::logNotice("Creating model \"" + name + "\"");
 			if(this->models.count(name) > 0) {
 				logger::logWarning("Model already exists with name \"" + name + "\"");
@@ -242,7 +302,7 @@ namespace remus {
 			return this;
 		}
 
-		Context* Context::loadModel(std::string name, std::vector<std::string> meshNames) {
+		Cache* Cache::loadModel(std::string name, std::vector<std::string> meshNames) {
 			std::string names = "";
 			for(auto mn : meshNames) {
 				names += mn + ",";
@@ -259,7 +319,7 @@ namespace remus {
 			return this;
 		}
 
-		gfx::models::Model* Context::getModel(std::string name) {
+		gfx::models::Model* Cache::getModel(std::string name) {
 			if(this->models.count(name) == 0) 
 				throw std::runtime_error("No model with name \"" + name + "\"");
 			return this->models[name];
@@ -269,7 +329,7 @@ namespace remus {
 		/****************
 		* Texture2D
 		****************/
-		Context* Context::loadTexture2D(std::string name, std::string path, bool genMipmaps) {
+		Cache* Cache::loadTexture2D(std::string name, std::string path, bool genMipmaps) {
 			logger::logNotice("Creating texture2D \"" + name + "\" from " + path);
 			if(this->texture2D.count(name) > 0) {
 				logger::logWarning("Texture2D already exists with name \"" + name + "\"");
@@ -283,7 +343,7 @@ namespace remus {
 			return this;
 		}
 
-		Context* Context::loadTexture2D(std::string name, gfx::texture::Texture2D* tex) {
+		Cache* Cache::loadTexture2D(std::string name, gfx::texture::Texture2D* tex) {
 			logger::logNotice("Creating texture2D \"" + name + "\" from preload.");
 			if(this->texture2D.count(name) > 0) {
 				logger::logWarning("Texture2D already exists with name \"" + name + "\"");
@@ -294,7 +354,7 @@ namespace remus {
 			return this;
 		}
 
-		gfx::texture::Texture2D* Context::getTexture2D(std::string name) {
+		gfx::texture::Texture2D* Cache::getTexture2D(std::string name) {
 			if(this->texture2D.count(name) == 0) 
 				throw std::runtime_error("No texture with name \"" + name + "\"");
 			return this->texture2D[name];
@@ -304,7 +364,7 @@ namespace remus {
 		/****************
 		* Material
 		****************/
-		Context* Context::loadMaterial(std::string name, gfx::texture::Material* material) {
+		Cache* Cache::loadMaterial(std::string name, gfx::texture::Material* material) {
 			logger::logNotice("Loading material \"" + name + "\"");
 			if(this->materials.count(name) > 0) {
 				logger::logWarning("Material already exists with name \"" + name + "\"");
@@ -315,7 +375,7 @@ namespace remus {
 			return this;
 		}
 
-		Context* Context::createMaterial(std::string name, std::string diffuse, std::string specular, GLfloat shininess) {
+		Cache* Cache::createMaterial(std::string name, std::string diffuse, std::string specular, GLfloat shininess) {
 			logger::logNotice("Creating new material \"" + name + "\" with diffuse=" + diffuse + ", specular=" + specular + ", shininess=" + std::to_string(shininess));
 			if(this->materials.count(name) > 0) {
 				logger::logWarning("Material already exists with name \"" + name + "\"");
@@ -329,7 +389,7 @@ namespace remus {
 			return this;
 		}
 
-		gfx::texture::Material* Context::getMaterial(std::string name) {
+		gfx::texture::Material* Cache::getMaterial(std::string name) {
 			if(this->materials.count(name) == 0) 
 				throw std::runtime_error("No material with name \"" + name + "\"");
 			return this->materials[name];
@@ -339,7 +399,7 @@ namespace remus {
 		/****************
 		* Font
 		****************/
-		Context* Context::loadFont(std::string name, std::string path, GLint size) {
+		Cache* Cache::loadFont(std::string name, std::string path, GLint size) {
 			logger::logNotice("Creating font \"" + name + "\" from " + path + " with size " + std::to_string(size));
 			if(this->fonts.count(name) > 0)
 				logger::logWarning("Font already exists with name \"" + name + "\"");
@@ -350,14 +410,14 @@ namespace remus {
 			return this;
 		}
 
-		gfx::texture::Font* Context::getFont(std::string name) {
+		gfx::texture::Font* Cache::getFont(std::string name) {
 			if(this->fonts.count(name) == 0) 
 				throw std::runtime_error("No font with name \"" + name + "\"");
 			return this->fonts[name];
 		}
 
 
-		std::string Context::readContentsString(std::string pathToFile) {
+		std::string Cache::readContentsString(std::string pathToFile) {
 			std::filesystem::path p(pathToFile);
 			if(!std::filesystem::exists(p)) {
 				throw std::runtime_error("File " + pathToFile + " does not exist.");
@@ -380,8 +440,8 @@ namespace remus {
 			return stream.str();
 		}
 
-		Context::~Context() {
-			logger::logNotice("Destroying context...");
+		Cache::~Cache() {
+			logger::logNotice("Destroying cache...");
 			for(auto &it : this->shaders) delete it.second;
 			for(auto &it : this->shaderPrograms) delete it.second;
 			for(auto &it : this->meshes) delete it.second;
@@ -389,7 +449,7 @@ namespace remus {
 			for(auto &it : this->texture2D) delete it.second;
 			for(auto &it : this->materials) delete it.second;
 			for(auto &it : this->fonts) delete it.second;
-			logger::logNotice("Destroyed context.");
+			logger::logNotice("Destroyed cache.");
 		}
 	}
 }

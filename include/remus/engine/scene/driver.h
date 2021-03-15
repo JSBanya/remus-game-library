@@ -2,8 +2,9 @@
 
 #include <vector>
 #include <algorithm>
-#include <remus/engine/context.h>
+#include <remus/engine/cache.h>
 #include <remus/engine/scene/scene.h>
+#include <remus/gfx/shaders/shaderProgram.h>
 
 namespace remus {
 	namespace engine {
@@ -11,7 +12,7 @@ namespace remus {
 
 			class Driver {
 			public:
-				Driver(Context* context = nullptr);
+				Driver(Cache* cache);
 
 				virtual void addScene(Scene* s) noexcept;
 				virtual void removeScene(Scene* s) noexcept;
@@ -21,10 +22,12 @@ namespace remus {
 				virtual void render(GLfloat time, GLfloat delta);
 				virtual void draw();
 
+				virtual gfx::shaders::ShaderProgram* getPostProcessor() noexcept;
+
 				virtual ~Driver();
 
 			protected:
-				Context* context;
+				Cache* cache;
 				std::vector<Scene*> activeScenes;
 
 			};

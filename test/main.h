@@ -6,8 +6,8 @@
 #include <remus/engine/window.h>
 #include <remus/engine/runtime.h>
 #include <remus/engine/driver/driver.h>
-#include <remus/engine/context.h>
+#include <remus/engine/cache.h>
 #include "testDriver.h"
 #include "settings.h"
 
-void loadResources(remus::engine::Context* context);
+void loadResources(remus::engine::Cache* cache);

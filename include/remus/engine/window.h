@@ -5,8 +5,11 @@
 #include <glm/glm.hpp>
 #include <stdexcept>
 #include <string>
+#include <remus/gfx/context.h>
 #include <remus/utils/mouse.h>
 #include <remus/utils/keyboard.h>
+#include <remus/utils/screen.h>
+#include <remus/gfx/shaders/shaderProgram.h>
 #include <remus/logging/logger.h>
 
 namespace remus {
@@ -14,10 +17,12 @@ namespace remus {
 
 		class Window {
 		public:
-			Window(GLint width, GLint height, std::string title, bool fullscreen = true, Window* share = NULL);
+			Window(GLint width, GLint height, GLint screenWidth, GLint screenHeight, std::string title, bool fullscreen = true, Window* share = NULL);
 			
+			void beginDraw() noexcept;
+			void endDraw() noexcept;
+			void update(gfx::shaders::ShaderProgram* postprocessor) noexcept;
 			void clear() noexcept;
-			void update() noexcept;
 			
 			Window* setMouseInputNormal() noexcept; // Makes the cursor visible and behaving normally
 			Window* setMouseInputHidden() noexcept; // Makes the cursor invisible when it is over the content area of the window but does not restrict the cursor from leaving
@@ -27,14 +32,8 @@ namespace remus {
 			Window* detach() noexcept;
 			void close();
 
-			Window* setViewport(GLint width, GLint height);
-			Window* setGlDepthTest(bool value);
-			Window* setGlBlend(bool value);
-			Window* setMSAA(GLint value);
-			Window* setFaceCulling(bool value);
-			Window* setClearColor(GLfloat r, GLfloat g, GLfloat b, GLfloat a);
+			inline gfx::Context* context() noexcept { return this->openGLContext; };
 
-			inline bool isPointersLoaded() noexcept { return this->pointersLoaded; };
 			inline utils::Mouse* getMouse() noexcept { return this->mouse; };
 			inline utils::Keyboard* getKeyboard() noexcept { return this->keyboard; };
 			inline GLFWwindow* getWindow() noexcept { return this->window; };
@@ -51,23 +50,21 @@ namespace remus {
 			void loadGlPointers();
 
 		protected:
-			GLFWwindow* window;
+			gfx::Context* openGLContext;
+			utils::Screen* screen;
 			utils::Mouse* mouse;
 			utils::Keyboard* keyboard;
 
-			bool pointersLoaded;
-			bool viewportSet = false;
-			bool isCurrent = false;
+			GLFWwindow* window;
 			GLFWmonitor* monitor;
+
 			GLint width, height;
+			GLint screenWidth, screenHeight;
 			std::string title;
 			bool fullscreen;
 
-			// OpenGL
-			glm::vec4 clearColor = glm::vec4(0, 0, 0, 1.0);
-			GLint clearMode = GL_COLOR_BUFFER_BIT;
-
 		protected:
+			inline static GLFWwindow* currentWindow = nullptr;
 			inline static GLint openGLMajor = 4, openGLMinor = 3;
 			inline static GLint openWindows = 0;
 

@@ -3,9 +3,11 @@
 namespace remus {
 	namespace engine {
 
-		Window::Window(GLint width, GLint height, std::string title, bool fullscreen, Window* share) {
+		Window::Window(GLint width, GLint height, GLint screenWidth, GLint screenHeight, std::string title, bool fullscreen, Window* share) {
 			if(width <= 0) throw std::invalid_argument("Width less than or equal to 0");
 			if(height <= 0) throw std::invalid_argument("Height less than or equal to 0");
+			if(screenWidth <= 0) throw std::invalid_argument("Buffer Width less than or equal to 0");
+			if(screenHeight <= 0) throw std::invalid_argument("Buffer Height less than or equal to 0");
 
 			// Init OpenGL as needed
 			if(Window::openWindows == 0) {
@@ -24,30 +26,73 @@ namespace remus {
 
 			this->width = width;
 			this->height = height;
+			this->screenWidth = screenWidth;
+			this->screenHeight = screenHeight;
 			this->title = title;
 			this->fullscreen = fullscreen;
 
 			GLFWwindow* sharedWindow = NULL;
 			if(share != NULL) {
 				sharedWindow = share->getWindow();
-				this->pointersLoaded = share->isPointersLoaded();
+				this->openGLContext = share->context();
+			} else {
+				this->openGLContext = new gfx::Context();
 			}
 
 			this->window = glfwCreateWindow(width, height, this->title.c_str(), this->monitor, sharedWindow);
+			this->attach();
+			this->loadGlPointers();
 
+			// Setup context
+			this->openGLContext->setViewport(this->width, this->height);
+			this->openGLContext->apply();
+				
 			// Create utils
+			this->screen = new utils::Screen(this->screenWidth, this->screenHeight, false);
 			this->mouse = new utils::Mouse(this->window);
 			this->mouse->setViewport(0, this->width, 0, this->height);
-
 			this->keyboard = new utils::Keyboard(this->window);
 		}
 
-		void Window::clear() noexcept {
-			glClear(this->clearMode);
+		void Window::beginDraw() noexcept {
+			this->assertAttached();
+
+			this->screen->getFBO().bind();
+			this->openGLContext->setViewport(this->screenWidth, this->screenHeight);
+			this->clear();
 		}
 
-		void Window::update() noexcept {
+		void Window::endDraw() noexcept {
+			this->assertAttached();
+			this->screen->getFBO().unbind();
+			this->openGLContext->setViewport(this->width, this->height);
+		}
+
+		void Window::update(gfx::shaders::ShaderProgram* postprocessor) noexcept {
+			postprocessor->bind();
+
+			// Setup for rendering screen quad
+			auto wasDepthTestEnabled = this->openGLContext->isDepthTestEnabled();
+			this->openGLContext->setDepthTest(false);
+			this->openGLContext->doClear(GL_COLOR_BUFFER_BIT);
+
+			// Set screen texture
+			glActiveTexture(GL_TEXTURE0);
+			postprocessor->setUniform("screen", 0);
+			glBindTexture(GL_TEXTURE_2D, this->screen->getTexture());
+
+			// Render screen quad
+			this->screen->getMesh()->drawTriangles();
+
+			postprocessor->unbind();
 			glfwSwapBuffers(this->window);
+
+			// Set back old context state
+			this->openGLContext->setDepthTest(wasDepthTestEnabled);
+		}
+
+		void Window::clear() noexcept {
+			this->openGLContext->doClear();
 		}
 
 		Window* Window::setMouseInputNormal() noexcept {
@@ -66,22 +111,15 @@ namespace remus {
 		}
 
 		Window* Window::attach() {
-			this->isCurrent = true;
+			Window::currentWindow = this->window;
 			glfwMakeContextCurrent(this->window);
-			if(!this->isPointersLoaded()) {
-				this->loadGlPointers();
-			}
-			if(!this->viewportSet) {
-				this->setViewport(this->width, this->height);
-			}
 			return this;
 		}
 
 		Window* Window::detach() noexcept {
-			if(this->isCurrent) {
-				glfwMakeContextCurrent(NULL);
-				this->isCurrent = false;
-			}
+			this->assertAttached();
+			glfwMakeContextCurrent(NULL);
+			Window::currentWindow = nullptr;
 			return this;
 		}
 
@@ -93,81 +131,13 @@ namespace remus {
 			if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
 				throw std::runtime_error("Failed to initialize GLAD");
 			}
-			this->pointersLoaded = true;
 		}
-
-		Window* Window::setViewport(GLint width, GLint height) {
-			this->assertAttached();
-
-			glViewport(0, 0, this->width, this->height);
-			this->viewportSet = true;
-			return this;
-		}
-
-		Window* Window::setGlDepthTest(bool value) {
-			this->assertAttached();
-
-			if(value) {
-				glEnable(GL_DEPTH_TEST);
-				this->clearMode |= GL_DEPTH_BUFFER_BIT;
-			} else {
-				glDisable(GL_DEPTH_TEST);
-				this->clearMode &= ~GL_DEPTH_BUFFER_BIT;
-			}
-
-			return this;
-		}
-
-		Window* Window::setGlBlend(bool value) {
-			this->assertAttached();
-
-			if(value) {
-				glEnable(GL_BLEND);
-				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			} else {
-				glDisable(GL_BLEND);
-			}
-			return this;
-		}
-
-		Window* Window::setMSAA(GLint value) {
-			this->assertAttached();
-
-			if(value < 0) {
-				logger::logWarning("Unable to set MSAA to a negative value.");
-				return this;
-			}
-
-			glfwWindowHint(GLFW_SAMPLES, value);
-			if(value > 0) {
-				glEnable(GL_MULTISAMPLE);
-			} else {
-				glDisable(GL_MULTISAMPLE);
-			}
-
-			return this;
-		}
-
-		Window* Window::setFaceCulling(bool value) {
-			this->assertAttached();
-			if(value) {
-				glEnable(GL_CULL_FACE);
-				glFrontFace(GL_CCW);
-			} else {
-				glDisable(GL_CULL_FACE);
-			}
-			return this;
-		}
-
-		Window* Window::setClearColor(GLfloat r, GLfloat g, GLfloat b, GLfloat a) {
-			glClearColor(r, g, b, a);
-			this->clearMode |= GL_COLOR_BUFFER_BIT;
-			return this;
-		}	
 
 		Window::~Window() {
 			delete this->mouse;
 			delete this->keyboard;
+			if(this->screen) 
+				delete this->screen;
 			glfwDestroyWindow(this->window);
 
 			Window::openWindows -= 1;
@@ -178,7 +148,7 @@ namespace remus {
 		}
 
 		void Window::assertAttached() {
-			if(!this->isCurrent) 
+			if(Window::currentWindow != this->window) 
 				throw std::logic_error("Window is not attached.");
 		}
 

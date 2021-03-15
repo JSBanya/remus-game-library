@@ -11,7 +11,7 @@
 #include <remus/logging/logger.h>
 #include <remus/engine/entity/entity.h>
 #include <remus/utils/mouse.h>
-#include <remus/engine/context.h>
+#include <remus/engine/cache.h>
 #include <remus/gfx/lighting/pointLights.h>
 #include <remus/gfx/lighting/directionalLights.h>
 #include <remus/gfx/lighting/spotLights.h>
@@ -22,7 +22,7 @@ namespace remus {
 
 			class Scene {
 			public:
-				Scene(std::string name, gfx::view::Camera* c, Context* context = nullptr);
+				Scene(std::string name, gfx::view::Camera* c, Cache* cache = nullptr);
 
 				virtual void tick(GLint num); // Happens every game tick
 				virtual void render(GLfloat time, GLfloat delta); // Happens every frame (depends on fps)
@@ -35,8 +35,8 @@ namespace remus {
 					this->activeCamera = c;
 				}
 
-				inline void setContext(Context* c) noexcept {
-					this->context = c;
+				inline void setCache(Cache* c) noexcept {
+					this->cache = c;
 				}
 
 				inline gfx::view::Camera* getCamera() noexcept {
@@ -46,7 +46,7 @@ namespace remus {
 			protected:
 				std::string name;
 				gfx::view::Camera* activeCamera;
-				Context* context;
+				Cache* cache;
 
 				gfx::lighting::PointLights pointLights;
 				gfx::lighting::DirectionalLights directionaLights;
