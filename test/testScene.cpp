@@ -56,7 +56,7 @@ void TestScene::setup() {
 		0.07, 
 		0.017
 	);
-	// this->directionaLights.add(glm::vec4(1.0, -0.5f, 1.0, 1.0), glm::vec4(1.0, 1.0, 1.0, 1.0));
+	// this->directionaLights.newLight(glm::vec4(1.0, -0.5f, 1.0, 1.0), glm::vec4(1.0, 1.0, 1.0, 1.0));
 
 	// Camera
 	this->activeCamera->setPos(0, 1.0f, 0);
@@ -101,8 +101,8 @@ void TestScene::render(GLfloat time, GLfloat delta) {
 		this->activeCamera->addPosZ(-1.0f * this->movementSpeed * delta);
 	}
 
-	if(this->keyboard->isPressed(GLFW_KEY_F) && time - this->lastSpotlightToggle >= 0.25f) {
-		remus::logger::logNotice("Toggling spotlight");
+	if(this->keyboard->isPressed(GLFW_KEY_F) && time - this->lastSpotlightToggle >= 0.20f) {
+		remus::logging::Logger::logNotice("Toggling spotlight");
 		this->spotLights.updateActive(0, !this->spotLights.get(0)->Active);
 		this->lastSpotlightToggle = time;
 	}

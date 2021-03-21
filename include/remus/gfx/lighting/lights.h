@@ -46,12 +46,12 @@ namespace remus {
 					this->ssbo.bind();
 					if(this->updateSSBO) {
 						// Update the contents of the SSBO
-						this->ssbo.addBufferDataDynamic(&this->lights, this->lights.size() * this->size);
+						this->updateSSBO = false;
+						this->ssbo.addBufferDataDynamic(NULL, this->lights.size() * this->size);
 						for(auto i = 0; i < this->lights.size(); i++) {
 							// Set the data of each light
 							this->forceUpdate(i);
 						}
-						this->updateSSBO = false;
 					}
 
 					this->ssbo.bindBufferBase(binding);

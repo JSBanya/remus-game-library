@@ -16,7 +16,7 @@ namespace remus {
 				throw std::runtime_error("No main window set.");
 			}
 
-			logger::logNotice("Runtime started.");
+			logging::Logger::logNotice("Runtime started.");
 
 			auto startTime = glfwGetTime();
 			auto lastTick = startTime;
@@ -49,12 +49,17 @@ namespace remus {
 				this->mainWindow->beginDraw();
 				driver->draw();
 				this->mainWindow->endDraw();
-				this->mainWindow->update(driver->getPostProcessor());
+
+				if(this->mainWindow->getMultisample() == 0) {
+					this->mainWindow->update(driver->getPostProcessor());
+				} else {
+					this->mainWindow->update(driver->getPostProcessorMS());
+				}
 
 				fps++;
 
 				if(timeSinceStart - lastSecond >= 1.0f) {
-					logger::logNotice("FPS: " + std::to_string(fps) + " | TPS: " + std::to_string(tps));
+					logging::Logger::logNotice("FPS: " + std::to_string(fps) + " | TPS: " + std::to_string(tps));
 					fps = 0;
 					tps = 0;
 					lastSecond += 1.0f;
@@ -64,7 +69,7 @@ namespace remus {
 
 		Runtime* Runtime::setMainWindow(Window* win) noexcept { 
 			if(win == NULL) {
-				logger::logWarning("Attempted to set runtime window to NULL.");
+				logging::Logger::logWarning("Attempted to set runtime window to NULL.");
 				return this;
 			}
 			this->mainWindow = win; 

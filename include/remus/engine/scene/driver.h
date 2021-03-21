@@ -22,7 +22,8 @@ namespace remus {
 				virtual void render(GLfloat time, GLfloat delta);
 				virtual void draw();
 
-				virtual gfx::shaders::ShaderProgram* getPostProcessor() noexcept;
+				virtual gfx::shaders::ShaderProgram* getPostProcessor() noexcept; // No-multisampling post processing
+				virtual gfx::shaders::ShaderProgram* getPostProcessorMS() noexcept; // Multisampling post processing
 
 				virtual ~Driver();
 

@@ -4,13 +4,13 @@ namespace remus {
 	namespace engine {
 
 		Cache::Cache() {
-			logger::logNotice("Creating new cache...");
+			logging::Logger::logNotice("Creating new cache...");
 			this->loadDefaults();
-			logger::logNotice("Created new cache.");
+			logging::Logger::logNotice("Created new cache.");
 		}
 
 		void Cache::loadDefaults() {
-			logger::logNotice("Loading cache defaults...");
+			logging::Logger::logNotice("Loading cache defaults...");
 
 			// default_vertex_shader_postprocessing
 			const std::string default_vertex_shader_postprocessing_source = 
@@ -26,7 +26,7 @@ namespace remus {
 				TexCoords = texPos;
 			}
 			)";
-			this->loadShader("default_vertex_shader_postprocessing",  new gfx::shaders::Shader(default_vertex_shader_postprocessing_source, GL_VERTEX_SHADER));
+			this->loadShader(Cache::DEFAULT_POSTPROCESSING_VERTEX_SHADER,  new gfx::shaders::Shader(default_vertex_shader_postprocessing_source, GL_VERTEX_SHADER));
 
 			// default_fragment_shader_postprocessing
 			const std::string default_fragment_shader_postprocessing_source = 
@@ -43,10 +43,10 @@ namespace remus {
 			}
 			)";
 
-		 	this->loadShader("default_fragment_shader_postprocessing", new gfx::shaders::Shader(default_fragment_shader_postprocessing_source, GL_FRAGMENT_SHADER));
+		 	this->loadShader(Cache::DEFAULT_POSTPROCESSING_FRAGMENT_SHADER, new gfx::shaders::Shader(default_fragment_shader_postprocessing_source, GL_FRAGMENT_SHADER));
 
 			// default_shader
-			this->loadShaderProgram("default_shader_postprocessing", {"default_vertex_shader_postprocessing", "default_fragment_shader_postprocessing"});
+			this->loadShaderProgram(Cache::DEFAULT_POSTPROCESSING_SHADER, {Cache::DEFAULT_POSTPROCESSING_VERTEX_SHADER, Cache::DEFAULT_POSTPROCESSING_FRAGMENT_SHADER});
 
 			// default_vertex_shader_text_generation
 			const std::string default_vertex_shader_text_generation_source = 
@@ -61,7 +61,7 @@ namespace remus {
 					texCoord = texPos;
 				}
 			)";
-			this->loadShader("default_vertex_shader_text_generation", new gfx::shaders::Shader(default_vertex_shader_text_generation_source, GL_VERTEX_SHADER));
+			this->loadShader(Cache::DEFAULT_TEXT_GENERATION_VERTEX_SHADER, new gfx::shaders::Shader(default_vertex_shader_text_generation_source, GL_VERTEX_SHADER));
 
 			// default_fragment_shader_text_generation
 			const std::string default_fragment_shader_text_generation_source = 
@@ -74,24 +74,24 @@ namespace remus {
 				FragColor = texture(character, texCoord);
 			}
 			)";
-			this->loadShader("default_fragment_shader_text_generation", new gfx::shaders::Shader(default_fragment_shader_text_generation_source, GL_FRAGMENT_SHADER));
+			this->loadShader(Cache::DEFAULT_TEXT_GENERATION_FRAGMENT_SHADER, new gfx::shaders::Shader(default_fragment_shader_text_generation_source, GL_FRAGMENT_SHADER));
 
 			// default_shader_text_generation
-			this->loadShaderProgram("default_shader_text_generation", {"default_vertex_shader_text_generation", "default_fragment_shader_text_generation"});
+			this->loadShaderProgram(Cache::DEFAULT_TEXT_GENERATION_SHADER, {Cache::DEFAULT_TEXT_GENERATION_VERTEX_SHADER, Cache::DEFAULT_TEXT_GENERATION_FRAGMENT_SHADER});
 		}
 
 		/****************
 		* Shader
 		****************/
 		Cache* Cache::loadShader(std::string name, gfx::shaders::Shader* shader) {
-			logger::logNotice("Loading shader with name \"" + name + "\"");
+			logging::Logger::logNotice("Loading shader with name \"" + name + "\"");
 
 			if(this->shaders.count(name) > 0) {
-				logger::logWarning("Shader already exists with name \"" + name + "\"");
+				logging::Logger::logWarning("Shader already exists with name \"" + name + "\"");
 			}
 
 			this->shaders[name] = shader;
-			logger::logNotice("Loaded shader with name \"" + name + "\"");
+			logging::Logger::logNotice("Loaded shader with name \"" + name + "\"");
 			return this;
 		}
 
@@ -105,7 +105,7 @@ namespace remus {
 				throw std::runtime_error("Unknown or unimplemented shader type: " + shaderType);
 			}
 
-			logger::logNotice("Reading " + shaderType + " shader \"" + name + "\" from " + pathToFile);
+			logging::Logger::logNotice("Reading " + shaderType + " shader \"" + name + "\" from " + pathToFile);
 
 			auto src = this->readContentsString(pathToFile);
 			this->loadShader(name, new gfx::shaders::Shader(src, st));
@@ -137,7 +137,7 @@ namespace remus {
 				names += sn + ",";
 			}
 
-			logger::logNotice("Loading shader program \"" + programName + "\" from shaders: " + names);
+			logging::Logger::logNotice("Loading shader program \"" + programName + "\" from shaders: " + names);
 
 			std::vector<gfx::shaders::Shader*> shaders;
 			for(auto name : shaderNames) {
@@ -148,7 +148,7 @@ namespace remus {
 			}
 
 			this->shaderPrograms[programName] = new gfx::shaders::ShaderProgram(shaders);;
-			logger::logNotice("Loaded shader program \"" + programName + "\" from shaders: " + names);
+			logging::Logger::logNotice("Loaded shader program \"" + programName + "\" from shaders: " + names);
 			return this;
 		}
 
@@ -163,14 +163,14 @@ namespace remus {
 		* Mesh
 		****************/
 		Cache* Cache::loadMeshes(std::string prefix, std::string path, bool genOBB) {
-			logger::logNotice("Loading meshes from file \"" + path + "\" with prefix \"" + prefix + "\"");
+			logging::Logger::logNotice("Loading meshes from file \"" + path + "\" with prefix \"" + prefix + "\"");
 
 			auto meshes = this->getMeshesFromFile(path, genOBB);
 			for(auto &it : meshes) {
 				this->loadMesh(prefix + it.first, it.second);
 			}
 
-			logger::logNotice("Loaded all meshes from file \"" + path + "\" with prefix \"" + prefix + "\"");
+			logging::Logger::logNotice("Loaded all meshes from file \"" + path + "\" with prefix \"" + prefix + "\"");
 			return this;
 		}
 
@@ -252,12 +252,12 @@ namespace remus {
 		}
 
 		Cache* Cache::loadMesh(std::string name, gfx::models::Mesh* m) {
-			logger::logNotice("Creating mesh \"" + name + "\"");
+			logging::Logger::logNotice("Creating mesh \"" + name + "\"");
 			if(this->meshes.count(name) > 0)
-				logger::logWarning("Mesh already exists with name \"" + name + "\"");
+				logging::Logger::logWarning("Mesh already exists with name \"" + name + "\"");
 
 			this->meshes[name] = m;
-			logger::logNotice("Created mesh \"" + name + "\"");
+			logging::Logger::logNotice("Created mesh \"" + name + "\"");
 
 			return this;
 		}
@@ -273,7 +273,7 @@ namespace remus {
 		* Model
 		****************/
 		Cache* Cache::loadModel(std::string name, std::string path, bool addMeshesToCache, bool genOBB) {
-			logger::logNotice("Loading model \"" + name + "\" from file \"" + path + "\"");
+			logging::Logger::logNotice("Loading model \"" + name + "\" from file \"" + path + "\"");
 
 			auto meshes = this->getMeshesFromFile(path, genOBB);
 
@@ -287,18 +287,18 @@ namespace remus {
 
 			this->loadModel(name, new gfx::models::Model(meshes));
 
-			logger::logNotice("Loaded model \"" + name + "\" (meshes: " + meshNames + ") from file \"" + path + "\"");
+			logging::Logger::logNotice("Loaded model \"" + name + "\" (meshes: " + meshNames + ") from file \"" + path + "\"");
 			return this;
 		}
 
 		Cache* Cache::loadModel(std::string name, gfx::models::Model* model) {
-			logger::logNotice("Creating model \"" + name + "\"");
+			logging::Logger::logNotice("Creating model \"" + name + "\"");
 			if(this->models.count(name) > 0) {
-				logger::logWarning("Model already exists with name \"" + name + "\"");
+				logging::Logger::logWarning("Model already exists with name \"" + name + "\"");
 			}
 
 			this->models[name] = model;
-			logger::logNotice("Created model \"" + name + "\"");
+			logging::Logger::logNotice("Created model \"" + name + "\"");
 			return this;
 		}
 
@@ -307,7 +307,7 @@ namespace remus {
 			for(auto mn : meshNames) {
 				names += mn + ",";
 			}
-			logger::logNotice("Creating model \"" + name + "\" from existing meshes: " + names);
+			logging::Logger::logNotice("Creating model \"" + name + "\" from existing meshes: " + names);
 
 			std::unordered_map<std::string, gfx::models::Mesh*> meshes;
 			for(auto mn : meshNames) {
@@ -315,7 +315,7 @@ namespace remus {
 			}
 
 			this->loadModel(name, new gfx::models::Model(meshes));
-			logger::logNotice("Created model \"" + name + "\" from existing meshes: " + names);
+			logging::Logger::logNotice("Created model \"" + name + "\" from existing meshes: " + names);
 			return this;
 		}
 
@@ -330,27 +330,27 @@ namespace remus {
 		* Texture2D
 		****************/
 		Cache* Cache::loadTexture2D(std::string name, std::string path, bool genMipmaps) {
-			logger::logNotice("Creating texture2D \"" + name + "\" from " + path);
+			logging::Logger::logNotice("Creating texture2D \"" + name + "\" from " + path);
 			if(this->texture2D.count(name) > 0) {
-				logger::logWarning("Texture2D already exists with name \"" + name + "\"");
+				logging::Logger::logWarning("Texture2D already exists with name \"" + name + "\"");
 			}
 
 			auto t = new gfx::texture::Texture2D();
 			t->load(path, genMipmaps);
 			this->texture2D[name] = t;
-			logger::logNotice("Created texture2D \"" + name + "\" from " + path);
+			logging::Logger::logNotice("Created texture2D \"" + name + "\" from " + path);
 
 			return this;
 		}
 
 		Cache* Cache::loadTexture2D(std::string name, gfx::texture::Texture2D* tex) {
-			logger::logNotice("Creating texture2D \"" + name + "\" from preload.");
+			logging::Logger::logNotice("Creating texture2D \"" + name + "\" from preload.");
 			if(this->texture2D.count(name) > 0) {
-				logger::logWarning("Texture2D already exists with name \"" + name + "\"");
+				logging::Logger::logWarning("Texture2D already exists with name \"" + name + "\"");
 			}
 
 			this->texture2D[name] = tex;
-			logger::logNotice("Created texture2D \"" + name + "\" from preload.");
+			logging::Logger::logNotice("Created texture2D \"" + name + "\" from preload.");
 			return this;
 		}
 
@@ -365,27 +365,27 @@ namespace remus {
 		* Material
 		****************/
 		Cache* Cache::loadMaterial(std::string name, gfx::texture::Material* material) {
-			logger::logNotice("Loading material \"" + name + "\"");
+			logging::Logger::logNotice("Loading material \"" + name + "\"");
 			if(this->materials.count(name) > 0) {
-				logger::logWarning("Material already exists with name \"" + name + "\"");
+				logging::Logger::logWarning("Material already exists with name \"" + name + "\"");
 			}
 
 			this->materials[name] = material;
-			logger::logNotice("Loading material \"" + name + "\"");
+			logging::Logger::logNotice("Loading material \"" + name + "\"");
 			return this;
 		}
 
 		Cache* Cache::createMaterial(std::string name, std::string diffuse, std::string specular, GLfloat shininess) {
-			logger::logNotice("Creating new material \"" + name + "\" with diffuse=" + diffuse + ", specular=" + specular + ", shininess=" + std::to_string(shininess));
+			logging::Logger::logNotice("Creating new material \"" + name + "\" with diffuse=" + diffuse + ", specular=" + specular + ", shininess=" + std::to_string(shininess));
 			if(this->materials.count(name) > 0) {
-				logger::logWarning("Material already exists with name \"" + name + "\"");
+				logging::Logger::logWarning("Material already exists with name \"" + name + "\"");
 			}
 
 			auto diffuseTex = (diffuse.size() == 0 ? nullptr : this->getTexture2D(diffuse));
 			auto specularTex = (specular.size() == 0 ? nullptr : this->getTexture2D(specular));
 
 			this->materials[name] = new gfx::texture::Material(diffuseTex, specularTex, shininess);
-			logger::logNotice("Created new material \"" + name + "\"");
+			logging::Logger::logNotice("Created new material \"" + name + "\"");
 			return this;
 		}
 
@@ -400,12 +400,12 @@ namespace remus {
 		* Font
 		****************/
 		Cache* Cache::loadFont(std::string name, std::string path, GLint size) {
-			logger::logNotice("Creating font \"" + name + "\" from " + path + " with size " + std::to_string(size));
+			logging::Logger::logNotice("Creating font \"" + name + "\" from " + path + " with size " + std::to_string(size));
 			if(this->fonts.count(name) > 0)
-				logger::logWarning("Font already exists with name \"" + name + "\"");
+				logging::Logger::logWarning("Font already exists with name \"" + name + "\"");
 
 			this->fonts[name] = new gfx::texture::Font(path, size);
-			logger::logNotice("Creating font \"" + name + "\" from " + path + " with size " + std::to_string(size));
+			logging::Logger::logNotice("Creating font \"" + name + "\" from " + path + " with size " + std::to_string(size));
 
 			return this;
 		}
@@ -441,7 +441,7 @@ namespace remus {
 		}
 
 		Cache::~Cache() {
-			logger::logNotice("Destroying cache...");
+			logging::Logger::logNotice("Destroying cache...");
 			for(auto &it : this->shaders) delete it.second;
 			for(auto &it : this->shaderPrograms) delete it.second;
 			for(auto &it : this->meshes) delete it.second;
@@ -449,7 +449,7 @@ namespace remus {
 			for(auto &it : this->texture2D) delete it.second;
 			for(auto &it : this->materials) delete it.second;
 			for(auto &it : this->fonts) delete it.second;
-			logger::logNotice("Destroyed cache.");
+			logging::Logger::logNotice("Destroyed cache.");
 		}
 	}
 }

@@ -3,11 +3,11 @@
 int main() {
 	srand(time(NULL));
 
-	remus::logger::initLogger("./");
-	remus::logger::logNotice("Starting remus test environment...");
+	remus::logging::Logger::init("./");
+	remus::logging::Logger::logNotice("Starting remus test environment...");
 
 	// Create framework
-	auto window = new remus::engine::Window(Settings::width, Settings::height, Settings::width, Settings::height, Settings::title, Settings::fullscreen);
+	auto window = new remus::engine::Window(Settings::width, Settings::height, 400, 400, Settings::title, Settings::fullscreen, Settings::multisampling);
 	auto runtime = new remus::engine::Runtime(window);
 	
 	// Setup window
@@ -26,10 +26,14 @@ int main() {
 	// Setup driver
 	auto driver = new TestDriver(window, runtime->getCache());
 
+	// Enable GL debug messages
+	remus::logging::Logger::enableGLDebug();
+
 	// Start
 	runtime->run(driver);
 
 	// Clean up
+	remus::logging::Logger::close();
 	delete driver;
 	delete runtime;
 	delete window;
@@ -37,10 +41,19 @@ int main() {
 }
 
 void loadResources(remus::engine::Cache* cache) {
-	remus::logger::logNotice("Loading resources");
+	remus::logging::Logger::logNotice("Loading resources");
+
+	// Test shader
 	cache->loadShaderVertex("test_shader_vert", "./resources/testShader.vert");
 	cache->loadShaderFragment("test_shader_frag", "./resources/testShader.frag");
 	cache->loadShaderProgram("test_shader", {"test_shader_vert", "test_shader_frag"});
+
+	// Postprocessing shader
+	cache->loadShaderVertex("postprocessing_vert", "./resources/postprocessing.vert");
+	cache->loadShaderFragment("postprocessing_frag", "./resources/postprocessing.frag");
+	cache->loadShaderFragment("postprocessing_ms_frag", "./resources/postprocessing_ms.frag");
+	cache->loadShaderProgram("postprocessing", {"postprocessing_vert", "postprocessing_frag"});
+	cache->loadShaderProgram("postprocessing_ms", {"postprocessing_vert", "postprocessing_ms_frag"});
 
 	// Floor
 	cache->loadModel("floor", "./resources/floor.glb", false, true);

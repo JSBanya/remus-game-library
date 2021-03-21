@@ -40,7 +40,11 @@ namespace remus {
 			}
 
 			gfx::shaders::ShaderProgram* Driver::getPostProcessor() noexcept {
-				return this->cache->getShaderProgram("default_shader_postprocessing");
+				return nullptr;
+			}
+
+			gfx::shaders::ShaderProgram* Driver::getPostProcessorMS() noexcept {
+				return nullptr;
 			}
 
 			Driver::~Driver() {

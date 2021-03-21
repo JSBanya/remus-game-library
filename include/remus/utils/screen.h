@@ -13,7 +13,7 @@ namespace remus {
 
 		class Screen {
 		public:
-			Screen(GLint width, GLint height, bool multisample = true);
+			Screen(GLint width, GLint height, GLint multisample = 0);
 
 			inline gfx::buffers::FBO& getFBO() noexcept {
 				return this->fbo;
@@ -35,9 +35,13 @@ namespace remus {
 				return this->height;
 			}
 
+			inline GLint getMultisample() noexcept {
+				return this->multisample;
+			}
+
 			~Screen();
 		private:
-			GLint width, height;
+			GLint width, height, multisample;
 			gfx::models::Rectangle* screenRectangle;
 			gfx::models::Mesh* screenMesh;
 

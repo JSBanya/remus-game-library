@@ -83,6 +83,15 @@ namespace remus {
 			std::unordered_map<std::string, gfx::texture::Texture2D*> texture2D;
 			std::unordered_map<std::string, gfx::texture::Material*> materials;
 			std::unordered_map<std::string, gfx::texture::Font*> fonts;
+
+		public:
+			inline static std::string DEFAULT_POSTPROCESSING_VERTEX_SHADER = "default_vertex_shader_postprocessing";
+			inline static std::string DEFAULT_POSTPROCESSING_FRAGMENT_SHADER = "default_fragment_shader_postprocessing";
+			inline static std::string DEFAULT_POSTPROCESSING_SHADER = "default_shader_postprocessing";
+
+			inline static std::string DEFAULT_TEXT_GENERATION_VERTEX_SHADER = "default_vertex_shader_text_generation";
+			inline static std::string DEFAULT_TEXT_GENERATION_FRAGMENT_SHADER = "default_fragment_shader_text_generation";
+			inline static std::string DEFAULT_TEXT_GENERATION_SHADER = "default_shader_text_generation";
 		};
 			
 	}

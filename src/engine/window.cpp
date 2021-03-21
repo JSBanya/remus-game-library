@@ -3,15 +3,26 @@
 namespace remus {
 	namespace engine {
 
-		Window::Window(GLint width, GLint height, GLint screenWidth, GLint screenHeight, std::string title, bool fullscreen, Window* share) {
+		Window::Window(GLint width, GLint height, GLint screenWidth, GLint screenHeight, std::string title, bool fullscreen, GLint multisample, Window* share) {
+			logging::Logger::logNotice("Creating window (width=" + std::to_string(width) 
+				+ ", height=" + std::to_string(height) 
+				+ ", screenWidth=" + std::to_string(screenWidth)
+				+ ", screenHeight=" + std::to_string(screenHeight)
+				+ ", title=" + title
+				+ ", fullscreen=" + (fullscreen ? "True": "False")
+				+ ", multisample=" + std::to_string(multisample)
+				+  (share == nullptr ? "" : ", shared=" + share->getTitle())
+			);
+			
 			if(width <= 0) throw std::invalid_argument("Width less than or equal to 0");
 			if(height <= 0) throw std::invalid_argument("Height less than or equal to 0");
 			if(screenWidth <= 0) throw std::invalid_argument("Buffer Width less than or equal to 0");
 			if(screenHeight <= 0) throw std::invalid_argument("Buffer Height less than or equal to 0");
+			if(multisample < 0) throw std::invalid_argument("Multisample less than 0");
 
 			// Init OpenGL as needed
 			if(Window::openWindows == 0) {
-				logger::logNotice("Performing first time graphics environment setup.");
+				logging::Logger::logNotice("Performing first time graphics environment setup.");
 				Window::initEnvironment();
 			}
 			Window::openWindows += 1;
@@ -30,6 +41,7 @@ namespace remus {
 			this->screenHeight = screenHeight;
 			this->title = title;
 			this->fullscreen = fullscreen;
+			this->multisample = multisample;
 
 			GLFWwindow* sharedWindow = NULL;
 			if(share != NULL) {
@@ -45,10 +57,11 @@ namespace remus {
 
 			// Setup context
 			this->openGLContext->setViewport(this->width, this->height);
+			this->openGLContext->setMSAA(this->multisample);
 			this->openGLContext->apply();
 				
 			// Create utils
-			this->screen = new utils::Screen(this->screenWidth, this->screenHeight, false);
+			this->screen = new utils::Screen(this->screenWidth, this->screenHeight, this->multisample);
 			this->mouse = new utils::Mouse(this->window);
 			this->mouse->setViewport(0, this->width, 0, this->height);
 			this->keyboard = new utils::Keyboard(this->window);
@@ -56,7 +69,6 @@ namespace remus {
 
 		void Window::beginDraw() noexcept {
 			this->assertAttached();
-
 			this->screen->getFBO().bind();
 			this->openGLContext->setViewport(this->screenWidth, this->screenHeight);
 			this->clear();
@@ -69,17 +81,34 @@ namespace remus {
 		}
 
 		void Window::update(gfx::shaders::ShaderProgram* postprocessor) noexcept {
+			this->openGLContext->doClear(GL_COLOR_BUFFER_BIT);
+			if(postprocessor == nullptr) {
+				// No post processor specified
+				// Simply blit color buffer
+				glBindFramebuffer(GL_READ_FRAMEBUFFER, this->screen->getFBO().getID());
+				glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+				glBlitFramebuffer(0, 0, this->screenWidth, this->screenHeight, 0, 0, this->width, this->height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+				glfwSwapBuffers(this->window);
+				return;
+			}
+
 			postprocessor->bind();
 
 			// Setup for rendering screen quad
 			auto wasDepthTestEnabled = this->openGLContext->isDepthTestEnabled();
 			this->openGLContext->setDepthTest(false);
-			this->openGLContext->doClear(GL_COLOR_BUFFER_BIT);
 
 			// Set screen texture
 			glActiveTexture(GL_TEXTURE0);
 			postprocessor->setUniform("screen", 0);
-			glBindTexture(GL_TEXTURE_2D, this->screen->getTexture());
+			if(this->multisample != 0) {
+				postprocessor->setUniform("multisample", this->multisample);
+				postprocessor->setUniform("vp_width", this->screenWidth);
+				postprocessor->setUniform("vp_height", this->screenHeight);
+				glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, this->screen->getTexture());
+			} else {
+				glBindTexture(GL_TEXTURE_2D, this->screen->getTexture());
+			}
 
 			// Render screen quad
 			this->screen->getMesh()->drawTriangles();
@@ -142,7 +171,7 @@ namespace remus {
 
 			Window::openWindows -= 1;
 			if(Window::openWindows == 0) {
-				logger::logNotice("Tearing down graphics environment (no more open windows).");
+				logging::Logger::logNotice("Tearing down graphics environment (no more open windows).");
 				Window::destroyEnvironment();
 			}
 		}
@@ -153,7 +182,7 @@ namespace remus {
 		}
 
 		void Window::initEnvironment() {
-			logger::logNotice("Initializing GLFW - Core Profile " + std::to_string(Window::openGLMajor) + "." + std::to_string(Window::openGLMinor));
+			logging::Logger::logNotice("Initializing GLFW - Core Profile " + std::to_string(Window::openGLMajor) + "." + std::to_string(Window::openGLMinor));
 			glfwInit();
 			glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 			glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -162,7 +191,7 @@ namespace remus {
 		}
 
 		void Window::destroyEnvironment() {
-			logger::logNotice("Destroying GLFW.");
+			logging::Logger::logNotice("Destroying GLFW.");
 			glfwTerminate();
 		}
 	}

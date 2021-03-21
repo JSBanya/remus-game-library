@@ -74,7 +74,7 @@ namespace remus {
 
 			void Entity::addMaterial(std::string meshName, texture::Material* material) {
 				if(this->materials.count(meshName) != 0) {
-					logger::logWarning("Duplicate texture set added to entity with name \"" + meshName + "\"");
+					logging::Logger::logWarning("Duplicate texture set added to entity with name \"" + meshName + "\"");
 				}
 
 				this->materials[meshName] = material;
@@ -93,7 +93,7 @@ namespace remus {
 			// 	std::vector<RayCastIntersection> intersections;
 
 			// 	if(!this->getModel()->hasOBB()) {
-			// 		logger::logWarning("Ray cast attempted at entity with no-OBB.");
+			// 		logging::Logger::logWarning("Ray cast attempted at entity with no-OBB.");
 			// 		return intersections;
 			// 	}
 

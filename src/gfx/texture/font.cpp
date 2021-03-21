@@ -70,7 +70,7 @@ namespace remus {
 				for(const char c : text) {
 					auto ch = this->getCharacter(c);
 					if(ch == nullptr) {
-						logger::logWarning("Error in generating text: Character '" + std::string(1, c) + "' not found.");
+						logging::Logger::logWarning("Error in generating text: Character '" + std::string(1, c) + "' not found.");
 						continue;
 					}
 					width += (ch->advance >> 6);
@@ -92,7 +92,7 @@ namespace remus {
 				for(const char c : text) {
 					auto ch = this->getCharacter(c);
 					if(ch == nullptr) {
-						logger::logWarning("Error in generating text: Character '" + std::string(1, c) + "' not found.");
+						logging::Logger::logWarning("Error in generating text: Character '" + std::string(1, c) + "' not found.");
 						continue;
 					}
 					

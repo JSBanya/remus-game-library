@@ -17,11 +17,11 @@ namespace remus {
 
 		class Window {
 		public:
-			Window(GLint width, GLint height, GLint screenWidth, GLint screenHeight, std::string title, bool fullscreen = true, Window* share = NULL);
+			Window(GLint width, GLint height, GLint screenWidth, GLint screenHeight, std::string title, bool fullscreen = true, GLint multisample = 0, Window* share = NULL);
 			
 			void beginDraw() noexcept;
 			void endDraw() noexcept;
-			void update(gfx::shaders::ShaderProgram* postprocessor) noexcept;
+			void update(gfx::shaders::ShaderProgram* postprocessor = nullptr) noexcept;
 			void clear() noexcept;
 			
 			Window* setMouseInputNormal() noexcept; // Makes the cursor visible and behaving normally
@@ -40,6 +40,7 @@ namespace remus {
 			inline GLFWmonitor* getMonitor() noexcept { return this->monitor; };
 			inline GLint getWidth() noexcept { return this->width; };
 			inline GLint getHeight() noexcept { return this->height; };
+			inline GLint getMultisample() noexcept { return this->multisample; };
 			inline std::string getTitle() noexcept { return this->title; };
 			inline bool isFullscreen() noexcept { return this->fullscreen; };
 
@@ -60,6 +61,7 @@ namespace remus {
 
 			GLint width, height;
 			GLint screenWidth, screenHeight;
+			GLint multisample;
 			std::string title;
 			bool fullscreen;
 

@@ -17,6 +17,14 @@ void TestDriver::render(GLfloat time, GLfloat delta) {
 	Driver::render(time, delta);
 }
 
+remus::gfx::shaders::ShaderProgram* TestDriver::getPostProcessor() noexcept {
+	return this->cache->getShaderProgram("postprocessing");
+}
+
+remus::gfx::shaders::ShaderProgram* TestDriver::getPostProcessorMS() noexcept {
+	return this->cache->getShaderProgram("postprocessing_ms");
+}
+
 TestDriver::~TestDriver() {
 	for(auto scene : this->activeScenes) {
 		delete scene;

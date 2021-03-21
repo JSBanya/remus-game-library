@@ -7,7 +7,7 @@ namespace remus {
 				this->name = name;
 				this->activeCamera = c;
 				this->cache = cache;
-				logger::logNotice("Created new scene with name \"" + name + "\".");
+				logging::Logger::logNotice("Created new scene with name \"" + name + "\".");
 			}
 
 			void Scene::tick(GLint num) {

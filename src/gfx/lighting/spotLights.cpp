@@ -34,6 +34,9 @@ namespace remus {
 			void SpotLights::updatePosition(size_t index, glm::vec4 position) {
 				auto sl = this->get(index);
 				sl->Position = position;
+
+				if(this->updateSSBO) 
+					return;
 				this->ssbo.bind();
 				this->ssbo.updateBufferData(glm::value_ptr(sl->Position), this->POSITION_SIZE, this->POSITION_OFFSET + this->SIZE * index);
 				this->ssbo.unbind();
@@ -42,6 +45,9 @@ namespace remus {
 			void SpotLights::updateDirection(size_t index, glm::vec4 direction) {
 				auto sl = this->get(index);
 				sl->Direction = direction;
+
+				if(this->updateSSBO) 
+					return;
 				this->ssbo.bind();
 				this->ssbo.updateBufferData(glm::value_ptr(sl->Direction), this->DIRECTION_SIZE, this->DIRECTION_OFFSET + this->SIZE * index);
 				this->ssbo.unbind();
@@ -50,6 +56,9 @@ namespace remus {
 			void SpotLights::updateColor(size_t index, glm::vec4 color) {
 				auto sl = this->get(index);
 				sl->Color = color;
+
+				if(this->updateSSBO) 
+					return;
 				this->ssbo.bind();
 				this->ssbo.updateBufferData(glm::value_ptr(sl->Color), this->COLOR_SIZE, this->COLOR_OFFSET + this->SIZE * index);
 				this->ssbo.unbind();
@@ -59,6 +68,9 @@ namespace remus {
 				auto sl = this->get(index);
 				sl->CutoffDegrees = cutoffDegrees;
 				GLfloat convertedCutoff = glm::cos(glm::radians(cutoffDegrees));
+
+				if(this->updateSSBO) 
+					return;
 				this->ssbo.bind();
 				this->ssbo.updateBufferData(&convertedCutoff, this->CUTOFF_SIZE, this->CUTOFF_OFFSET + this->SIZE * index);
 				this->ssbo.unbind();
@@ -68,6 +80,9 @@ namespace remus {
 				auto sl = this->get(index);
 				sl->OuterCutoffDegrees = outerCutoffDegrees;
 				GLfloat convertedCutoff = glm::cos(glm::radians(outerCutoffDegrees));
+
+				if(this->updateSSBO) 
+					return;
 				this->ssbo.bind();
 				this->ssbo.updateBufferData(&convertedCutoff, this->OUTER_CUTOFF_SIZE, this->OUTER_CUTOFF_OFFSET + this->SIZE * index);
 				this->ssbo.unbind();
@@ -76,6 +91,9 @@ namespace remus {
 			void SpotLights::updateAttenuationConstant(size_t index, GLfloat attentuationConstant) {
 				auto sl = this->get(index);
 				sl->AttenuationConstant = attentuationConstant;
+
+				if(this->updateSSBO) 
+					return;
 				this->ssbo.bind();
 				this->ssbo.updateBufferData(&sl->AttenuationConstant, this->ATTENUATION_CONSTANT_SIZE, this->ATTENUATION_CONSTANT_OFFSET + this->SIZE * index);
 				this->ssbo.unbind();
@@ -84,6 +102,9 @@ namespace remus {
 			void SpotLights::updateAttenuationLinear(size_t index, GLfloat attentuationLinear) {
 				auto sl = this->get(index);
 				sl->AttenuationLinear = attentuationLinear;
+
+				if(this->updateSSBO) 
+					return;
 				this->ssbo.bind();
 				this->ssbo.updateBufferData(&sl->AttenuationLinear, this->ATTENUATION_LINEAR_SIZE, this->ATTENUATION_LINEAR_OFFSET + this->SIZE * index);
 				this->ssbo.unbind();	
@@ -92,6 +113,9 @@ namespace remus {
 			void SpotLights::updateAttenuationQuadratic(size_t index, GLfloat attentuationQuadratic) {
 				auto sl = this->get(index);
 				sl->AttenuationQuadratic = attentuationQuadratic;
+
+				if(this->updateSSBO) 
+					return;
 				this->ssbo.bind();
 				this->ssbo.updateBufferData(&sl->AttenuationQuadratic, this->ATTENUATION_QUADRATIC_SIZE, this->ATTENUATION_QUADRATIC_OFFSET + this->SIZE * index);	
 				this->ssbo.unbind();
@@ -100,6 +124,9 @@ namespace remus {
 			void SpotLights::updateActive(size_t index, bool active) {
 				auto sl = this->get(index);
 				sl->Active = active;
+
+				if(this->updateSSBO) 
+					return;
 				this->ssbo.bind();
 				this->ssbo.updateBufferData(&sl->Active, this->ACTIVE_SIZE, this->ACTIVE_OFFSET + this->SIZE * index);	
 				this->ssbo.unbind();

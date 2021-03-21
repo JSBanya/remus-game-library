@@ -25,7 +25,7 @@ namespace remus {
 				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 				if(!this->fbo->complete()) {
-					logger::logError("WritableTexture2D: Framebuffer not complete.");
+					logging::Logger::logError("WritableTexture2D: Framebuffer not complete.");
 				}
 
 				this->fbo->unbind();

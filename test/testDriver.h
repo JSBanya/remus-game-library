@@ -14,6 +14,9 @@ public:
 
 	void render(GLfloat time, GLfloat delta);
 
+	remus::gfx::shaders::ShaderProgram* getPostProcessor() noexcept;
+	remus::gfx::shaders::ShaderProgram* getPostProcessorMS() noexcept;
+
 	~TestDriver();
 
 private:
