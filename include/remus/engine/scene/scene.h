@@ -26,10 +26,16 @@ namespace remus {
 
 				virtual void tick(GLint num); // Happens every game tick
 				virtual void render(GLfloat time, GLfloat delta); // Happens every frame (depends on fps)
-				virtual void draw();
 
-				virtual void addEntity(gfx::entity::Entity* e) noexcept;
-				virtual std::vector<gfx::entity::Entity*> getEntities() noexcept;
+				virtual void addEntity(gfx::entity::Entity* e, bool transparency = false) noexcept;
+
+				virtual std::vector<gfx::entity::Entity*> getOpaqueEntities() noexcept {
+					return this->opaqueEntities;
+				}
+
+				virtual std::vector<gfx::entity::Entity*> getTransparentEntities() noexcept {
+					return this->transparentEntities;
+				}
 
 				inline void setCamera(gfx::view::Camera* c) noexcept {
 					this->activeCamera = c;
@@ -43,6 +49,22 @@ namespace remus {
 					return this->activeCamera;
 				}
 
+				inline gfx::lighting::PointLights* getPointLights() {
+					return &this->pointLights;
+				}
+
+				inline gfx::lighting::DirectionalLights* getDirectionalLights() {
+					return &this->directionaLights;
+				}
+
+				inline gfx::lighting::SpotLights* getSpotLights() {
+					return &this->spotLights;
+				}
+
+				inline glm::vec3 getAmbient() {
+					return this->ambient;
+				}
+
 			protected:
 				std::string name;
 				gfx::view::Camera* activeCamera;
@@ -53,7 +75,8 @@ namespace remus {
 				gfx::lighting::SpotLights spotLights;
 				glm::vec3 ambient = glm::vec3(1.0);
 
-				std::vector<gfx::entity::Entity*> entities;
+				std::vector<gfx::entity::Entity*> opaqueEntities;
+				std::vector<gfx::entity::Entity*> transparentEntities;
 			};
 
 		}

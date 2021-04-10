@@ -17,10 +17,10 @@ namespace remus {
 				virtual void addScene(Scene* s) noexcept;
 				virtual void removeScene(Scene* s) noexcept;
 				virtual void clearScenes() noexcept;
+				virtual std::vector<Scene*> getActiveScenes() noexcept;
 
 				virtual void tick(GLint num);
 				virtual void render(GLfloat time, GLfloat delta);
-				virtual void draw();
 
 				virtual gfx::shaders::ShaderProgram* getPostProcessor() noexcept; // No-multisampling post processing
 				virtual gfx::shaders::ShaderProgram* getPostProcessorMS() noexcept; // Multisampling post processing

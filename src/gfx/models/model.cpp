@@ -19,7 +19,7 @@ namespace remus {
 
 			void Model::addMesh(Mesh* m, std::string name) {
 				if(this->meshes.count(name) != 0) {
-					logging::Logger::logWarning("Duplicate mesh added to model.");
+					Logger::logWarning("Duplicate mesh added to model.");
 				}
 
 				this->meshes[name] = m;
@@ -27,7 +27,7 @@ namespace remus {
 
 			Mesh* Model::getMesh(std::string name) {
 				if(this->meshes.count(name) == 0) {
-					logging::Logger::logWarning("Attempted to get non-existent mesh from model.");
+					Logger::logWarning("Attempted to get non-existent mesh from model.");
 					return nullptr;
 				}
 

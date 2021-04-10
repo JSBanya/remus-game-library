@@ -76,7 +76,7 @@ namespace remus {
 				this->unbind();
 				stbi_image_free(data);
 				
-				logging::Logger::logNotice("Loaded texture with width=" + std::to_string(this->width) + ", height=" + std::to_string(this->height) + ", channels=" + std::to_string(this->nChannels));
+				Logger::logNotice("Loaded texture with width=" + std::to_string(this->width) + ", height=" + std::to_string(this->height) + ", channels=" + std::to_string(this->nChannels));
 			}
 
 			Texture2D::~Texture2D() {

@@ -7,7 +7,10 @@
 #include <remus/engine/runtime.h>
 #include <remus/engine/driver/driver.h>
 #include <remus/engine/cache.h>
+#include <remus/engine/render/forward.h>
 #include "testDriver.h"
 #include "settings.h"
 
-void loadResources(remus::engine::Cache* cache);
+using namespace remus;
+
+void loadResources(engine::Cache* cache);

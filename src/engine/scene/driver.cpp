@@ -20,6 +20,10 @@ namespace remus {
 				this->activeScenes.clear();
 			}
 
+			std::vector<Scene*> Driver::getActiveScenes() noexcept {
+				return this->activeScenes;
+			}
+
 			void Driver::tick(GLint num) {
 				for(auto &s : this->activeScenes) {
 					s->setCache(this->cache);
@@ -30,12 +34,6 @@ namespace remus {
 			void Driver::render(GLfloat time, GLfloat delta) {
 				for(auto &s : this->activeScenes) {
 					s->render(time, delta);
-				}
-			}
-
-			void Driver::draw() {
-				for(auto &s : this->activeScenes) {
-					s->draw();
 				}
 			}
 

@@ -3,45 +3,36 @@
 int main() {
 	srand(time(NULL));
 
-	remus::logging::Logger::init("./");
-	remus::logging::Logger::logNotice("Starting remus test environment...");
+	Logger::init("./");
+	Logger::logNotice("Starting remus test environment...");
 
 	// Create framework
-	auto window = new remus::engine::Window(Settings::width, Settings::height, 400, 400, Settings::title, Settings::fullscreen, Settings::multisampling);
-	auto runtime = new remus::engine::Runtime(window);
+	engine::Window window(Settings::width, Settings::height, Settings::title, Settings::fullscreen);
+	window.setMouseInputBound();
 	
-	// Setup window
-	window->setMouseInputBound();
-
-	auto context = window->context();
-	context->setClearColor(0, 0, 0, 1.0);
-	context->setClearModeColor(true);
-	context->setDepthTest(true);
-	context->setClearModeDepth(true);
-	context->setFaceCulling(true);
-
+	engine::Runtime runtime;
+	
 	// Load resources
-	loadResources(runtime->getCache());
+	engine::Cache cache;
+	loadResources(&cache);
 
 	// Setup driver
-	auto driver = new TestDriver(window, runtime->getCache());
+	TestDriver driver(&window, &cache);
 
 	// Enable GL debug messages
-	remus::logging::Logger::enableGLDebug();
+	Logger::enableGLDebug();
 
 	// Start
-	runtime->run(driver);
+	engine::render::Forward forwardRendering(Settings::width, Settings::height, Settings::multisampling);
+	runtime.run(&window, &driver, &forwardRendering);
 
 	// Clean up
-	remus::logging::Logger::close();
-	delete driver;
-	delete runtime;
-	delete window;
+	Logger::close();
 	return 0;
 }
 
-void loadResources(remus::engine::Cache* cache) {
-	remus::logging::Logger::logNotice("Loading resources");
+void loadResources(engine::Cache* cache) {
+	Logger::logNotice("Loading resources");
 
 	// Test shader
 	cache->loadShaderVertex("test_shader_vert", "./resources/testShader.vert");

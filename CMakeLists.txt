@@ -18,13 +18,15 @@ add_library(remus STATIC
 	src/engine/window.cpp
 	src/engine/cache.cpp
 
+	src/engine/render/pipeline.cpp
+	src/engine/render/forward.cpp
+
 	src/engine/scene/driver.cpp
 	src/engine/scene/stackDriver.cpp
 	src/engine/scene/scene.cpp
 
 	src/utils/mouse.cpp
 	src/utils/keyboard.cpp
-	src/utils/screen.cpp
 
 	src/gfx/entity/entity.cpp
 

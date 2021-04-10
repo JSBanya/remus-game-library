@@ -13,7 +13,7 @@ namespace remus {
 
 		bool Keyboard::isPressed(int key) {
 			if(key < 0 || key > GLFW_KEY_LAST) {
-				logging::Logger::logError("Invalid key isPressed requested: " + std::to_string(key));
+				Logger::logError("Invalid key isPressed requested: " + std::to_string(key));
 				return false;
 			}
 
@@ -39,7 +39,7 @@ namespace remus {
 		void Keyboard::keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 			auto instance = Keyboard::instances[window];
 			if(key == GLFW_KEY_UNKNOWN) {
-				logging::Logger::logNotice("Unknown key action for key=" + std::to_string(key));
+				Logger::logNotice("Unknown key action for key=" + std::to_string(key));
 				return;
 			}
 

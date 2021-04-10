@@ -8,7 +8,7 @@ namespace remus {
 			: Camera(axisType)
 			{
 				if(near <= 0.0f)
-					logging::Logger::logWarning("Perspective camera 'near' less than or equal to to 0.");
+					Logger::logWarning("Perspective camera 'near' less than or equal to to 0.");
 				this->projection = glm::perspective(glm::radians(fov), (GLfloat)width / (GLfloat)height, near, far);
 			}
 

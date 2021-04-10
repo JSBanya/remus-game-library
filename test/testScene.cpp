@@ -1,7 +1,7 @@
 #include "testScene.h"
 
-TestScene::TestScene(remus::engine::Cache* cache, remus::gfx::view::Camera* camera, remus::utils::Mouse* mouse, remus::utils::Keyboard* keyboard) 
-	: remus::engine::scene::Scene("Test Scene", camera, cache) 
+TestScene::TestScene(engine::Cache* cache, gfx::view::Camera* camera, utils::Mouse* mouse, utils::Keyboard* keyboard) 
+	: engine::scene::Scene("Test Scene", camera, cache) 
 {
 	this->mouse = mouse;
 	this->keyboard = keyboard;
@@ -16,7 +16,7 @@ void TestScene::setup() {
 	const int Z_MIN = -50;
 	const int Z_MAX = 50;
 
-	auto floorEntity = new remus::gfx::entity::Entity(
+	auto floorEntity = new gfx::entity::Entity(
 		cache->getModel("floor"),
 		cache->getShaderProgram("test_shader"),
 		{cache->getMaterial("floor_material")},
@@ -34,7 +34,7 @@ void TestScene::setup() {
 	}
 
 	// Cube
-	this->cubeEntity = new remus::gfx::entity::Entity(
+	this->cubeEntity = new gfx::entity::Entity(
 							cache->getModel("cube"), 
 							cache->getShaderProgram("test_shader"), 
 							{cache->getMaterial("cube_material")}, 
@@ -102,7 +102,7 @@ void TestScene::render(GLfloat time, GLfloat delta) {
 	}
 
 	if(this->keyboard->isPressed(GLFW_KEY_F) && time - this->lastSpotlightToggle >= 0.20f) {
-		remus::logging::Logger::logNotice("Toggling spotlight");
+		Logger::logNotice("Toggling spotlight");
 		this->spotLights.updateActive(0, !this->spotLights.get(0)->Active);
 		this->lastSpotlightToggle = time;
 	}
@@ -150,7 +150,11 @@ void TestScene::render(GLfloat time, GLfloat delta) {
 }
 
 TestScene::~TestScene() {
-	for(auto e : this->entities) {
+	for(auto e : this->opaqueEntities) {
+		delete e;
+	}
+
+	for(auto e : this->transparentEntities) {
 		delete e;
 	}
 }

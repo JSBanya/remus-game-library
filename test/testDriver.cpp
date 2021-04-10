@@ -1,7 +1,7 @@
 #include "testDriver.h"
 
-TestDriver::TestDriver(remus::engine::Window* window, remus::engine::Cache* cache) : remus::engine::scene::Driver(cache) {
-	this->camera = new remus::gfx::view::PerspectiveCamera(70, Settings::width, Settings::height, 0.1, 100, remus::gfx::view::CameraAxisType::FIXED_PITCH);
+TestDriver::TestDriver(engine::Window* window, engine::Cache* cache) : engine::scene::Driver(cache) {
+	this->camera = new gfx::view::PerspectiveCamera(70, Settings::width, Settings::height, 0.1, 100, gfx::view::CameraAxisType::FIXED_PITCH);
 
 	// Setup scene
 	this->addScene(new TestScene(cache, camera, window->getMouse(), window->getKeyboard()));
@@ -17,11 +17,11 @@ void TestDriver::render(GLfloat time, GLfloat delta) {
 	Driver::render(time, delta);
 }
 
-remus::gfx::shaders::ShaderProgram* TestDriver::getPostProcessor() noexcept {
+gfx::shaders::ShaderProgram* TestDriver::getPostProcessor() noexcept {
 	return this->cache->getShaderProgram("postprocessing");
 }
 
-remus::gfx::shaders::ShaderProgram* TestDriver::getPostProcessorMS() noexcept {
+gfx::shaders::ShaderProgram* TestDriver::getPostProcessorMS() noexcept {
 	return this->cache->getShaderProgram("postprocessing_ms");
 }
 

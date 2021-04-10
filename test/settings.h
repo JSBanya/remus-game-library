@@ -8,5 +8,5 @@ public:
 	inline static int height = 900;
 	inline static bool fullscreen = false;
 	inline static std::string title = "Remus Test Environment";
-	inline static int multisampling = 0;
+	inline static int multisampling = 4;
 };

@@ -10,9 +10,11 @@
 #include <remus/utils/keyboard.h>
 #include "settings.h"
 
-class TestScene : public remus::engine::scene::Scene {
+using namespace remus;
+
+class TestScene : public engine::scene::Scene {
 public:
-	TestScene(remus::engine::Cache* cache, remus::gfx::view::Camera* camera, remus::utils::Mouse* mouse, remus::utils::Keyboard* keyboard);
+	TestScene(engine::Cache* cache, gfx::view::Camera* camera, utils::Mouse* mouse, utils::Keyboard* keyboard);
 
 	void setup();
 
@@ -22,8 +24,8 @@ public:
 	~TestScene();
 
 private:
-	remus::utils::Mouse* mouse;
-	remus::utils::Keyboard* keyboard;
+	utils::Mouse* mouse;
+	utils::Keyboard* keyboard;
 
 	bool mouseCoordsInitialized = false;
 	float lastX = 0.0f;
@@ -37,5 +39,5 @@ private:
 	float pointLightColorClock = 0.0f;
 	float pointLightPositionClock = 0.0f;
 
-	remus::gfx::entity::Entity* cubeEntity;
+	gfx::entity::Entity* cubeEntity;
 };

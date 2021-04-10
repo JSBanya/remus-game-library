@@ -17,5 +17,6 @@ void main() {
 		col += texelFetch(screen, vpCoords, i);
 	}
 	col /= multisample; // Simple averaging anti-aliasing
+	
 	FragColor = col;
 }

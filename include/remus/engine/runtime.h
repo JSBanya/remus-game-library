@@ -7,6 +7,7 @@
 #include <remus/engine/scene/driver.h>
 #include <remus/engine/cache.h>
 #include <remus/gfx/texture/writableTexture2d.h>
+#include <remus/engine/render/pipeline.h>
 
 namespace remus {
 	namespace engine {
@@ -14,21 +15,10 @@ namespace remus {
 		class Runtime {
 		public:
 			Runtime();
-			Runtime(Window* mainWindow);
 
-			void run(scene::Driver* driver);
-
-			Runtime* setMainWindow(Window* win) noexcept;
-			Runtime* setTPS(GLint tps) noexcept;
-
-			Cache* getCache() noexcept;
+			void run(Window* window, scene::Driver* driver, render::Pipeline* pipeline, GLint TPS = 30);
 
 			virtual ~Runtime();
-
-		protected:
-			Window* mainWindow = NULL;
-			GLint TPS = 30;
-			Cache* cache;
 		};
 
 	}

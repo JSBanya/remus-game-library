@@ -8,19 +8,21 @@
 #include <remus/gfx/view/perspectiveCamera.h>
 #include "testScene.h"
 
-class TestDriver : public remus::engine::scene::Driver {
+using namespace remus;
+
+class TestDriver : public engine::scene::Driver {
 public:
-	TestDriver(remus::engine::Window* window, remus::engine::Cache* cache);
+	TestDriver(engine::Window* window, engine::Cache* cache);
 
 	void render(GLfloat time, GLfloat delta);
 
-	remus::gfx::shaders::ShaderProgram* getPostProcessor() noexcept;
-	remus::gfx::shaders::ShaderProgram* getPostProcessorMS() noexcept;
+	gfx::shaders::ShaderProgram* getPostProcessor() noexcept;
+	gfx::shaders::ShaderProgram* getPostProcessorMS() noexcept;
 
 	~TestDriver();
 
 private:
-	remus::engine::Window* window;
-	remus::utils::Keyboard* keyboard;
-	remus::gfx::view::PerspectiveCamera* camera;
+	engine::Window* window;
+	utils::Keyboard* keyboard;
+	gfx::view::PerspectiveCamera* camera;
 };
